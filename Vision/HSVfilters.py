@@ -1,3 +1,4 @@
+import numpy as np
 
 class HSVFilter:
     def __init__(
@@ -22,3 +23,16 @@ class HSVFilter:
         self.yellow_hMax = yellow_hMax
         self.yellow_sMax = yellow_sMax
         self.yellow_vMax = yellow_vMax
+
+    def Get_Blue_Min_Vals_Arr(self):
+        return np.array([self.blue_hMin, self.blue_sMin, self.blue_vMin])
+    
+    def Get_Blue_Max_Vals_Arr(self):
+        return np.array([self.blue_hMax, self.blue_sMax, self.blue_vMax])
+    
+    def Get_Yellow_Min_Vals_Arr(self):
+        return np.array([self.yellow_hMin, self.yellow_sMin, self.yellow_vMin])
+
+    def Get_Yellow_Max_Vals_Arr(self):
+        return np.array([self.yellow_hMax, self.yellow_sMax, self.yellow_vMax])
+    

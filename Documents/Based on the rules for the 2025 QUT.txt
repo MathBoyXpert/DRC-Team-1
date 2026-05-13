@@ -1,0 +1,54 @@
+Based on the rules for the 2025 QUT Droid Racing Challenge, your robot will need a software architecture heavily focused on computer vision and autonomous decision-making.
+
+Here is a detailed, section-by-section guide outlining the core coding components your team will need to develop:
+
+1. Wireless Communication & State Management
+This component acts as the master switch for the robot's logic, handling the transition between idle, racing, and finished states.
+
+The robot must be able to be started, stopped, and finished wirelessly via a handheld remote.  
+
+The robot must operate entirely autonomously during the race, as any manual remote control of the driving will result in disqualification.  
+
+You should include logic to stop the droid autonomously once its nose reaches the start/finish line after a lap, as this grants a 5-second time bonus.  
+
+2. Computer Vision (CV) Engine
+Because main guidance must be strictly computer vision-based, this will be your most intensive processing module.
+
+Primary guidance must rely on computer vision using on-board sensors, as GPS, RC, and LiDAR are strictly prohibited.  
+
+The CV system must identify yellow tape to determine the track's left boundary and blue tape to determine the right boundary.  
+
+The system needs to detect green tape, which indicates the start/finish line, direction arrows, and track completion markers.  
+
+The vision pipeline must locate and interpret a black arrow sign measuring approximately 28x20cm that dictates upcoming left or right turns.  
+
+3. Obstacle & Entity Recognition
+This section handles the identification of dynamic and static hazards on the track so the navigation system can plot a safe course.
+
+For teams in the Opens category, the vision system must detect purple obstacles that can be up to 400x400x500mm in size.  
+
+The robot must use its vision to sense and avoid other droids on the track.  
+
+The detection models need to be robust enough to ignore background visual noise, such as spectators or judges wearing clothing that matches the colors of the track lines or obstacles.  
+
+4. Autonomous Navigation & Path Planning
+This is the "brain" of the robot. It takes the parsed data from the CV engine and computes the optimal path forward.
+
+Your pathfinding algorithm must calculate a trajectory that keeps the robot strictly within the track boundaries to avoid crossing the tape and incurring 2, 5, or 10-second time penalties.  
+
+Upon detecting the turning challenge arrow, the software must route the robot to the indicated left or right fork.  
+
+Successfully executing the correct turn yields a 5-second bonus.  
+
+In the Opens category, taking the wrong turn results in a 5-second penalty, and failing to choose a direction altogether causes a 10-second penalty.  
+
+You are permitted to use any software, and processing can be handled either on-board or off-board.  
+
+5. Motor Control Interface (Actuation)
+This final piece of the software stack translates the digital path planning into physical hardware movements.
+
+This section translates the calculated paths into propulsion and steering signals for the wheels, ensuring the robot remains on the ground at all times.  
+
+The control loop should actively account for traction and surface changes, particularly at the turning challenge where the surface grip may increase or decrease over a slightly raised area.  
+
+What specific programming languages or frameworks (like ROS, OpenCV, or Python) are you considering using to build out these software components?

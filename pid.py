@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+time = 0
+integral = 0
+time_prev = -1e-6
+e_prev = 0
+
 def pid(Kp, Ki, Kd, setpoint, measurement):
     global time, integral, time_prev, e_prev
 

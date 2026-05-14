@@ -4,10 +4,10 @@ class HSVFilter:
     # HSV filter constructor
     def __init__(
             self,
-            blue_hMin, blue_sMin, blue_vMin,
-            blue_hMax, blue_sMax, blue_vMax,
-            yellow_hMin, yellow_sMin, yellow_vMin,
-            yellow_hMax, yellow_sMax, yellow_vMax
+            blue_hMin=None, blue_sMin=None, blue_vMin=None,
+            blue_hMax=None, blue_sMax=None, blue_vMax=None,
+            yellow_hMin=None, yellow_sMin=None, yellow_vMin=None,
+            yellow_hMax=None, yellow_sMax=None, yellow_vMax=None
     ):
         # setting blue hsv values
         self.blue_hMin = blue_hMin
@@ -41,3 +41,22 @@ class HSVFilter:
     def Get_Yellow_Max_Vals_Arr(self):
         return np.array([self.yellow_hMax, self.yellow_sMax, self.yellow_vMax])
     
+    # prints all current HSV values for debugging and displaying
+    def debug_print_filters(self):
+        """Prints all current HSV filter values in a readable format."""
+        print("-" * 30)
+        print("DEBUG: Current HSV Filters")
+        print("-" * 30)
+        
+        # Blue Tape Filter (Right Boundary)
+        print(f"[BLUE FILTER (Right Boundary)]")
+        print(f"  Min: H={self.blue_hMin}, S={self.blue_sMin}, V={self.blue_vMin}")
+        print(f"  Max: H={self.blue_hMax}, S={self.blue_sMax}, V={self.blue_vMax}")
+        
+        print("") # Spacer
+
+        # Yellow Tape Filter (Left Boundary)
+        print(f"[YELLOW FILTER (Left Boundary)]")
+        print(f"  Min: H={self.yellow_hMin}, S={self.yellow_sMin}, V={self.yellow_vMin}")
+        print(f"  Max: H={self.yellow_hMax}, S={self.yellow_sMax}, V={self.yellow_vMax}")
+        print("-" * 30)

@@ -4,7 +4,6 @@ from HSVManager import HSVManager
 
 class vision:
     # constants
-    TRACKBAR_WINDOW = "Track Bar Window"
     
     def __init__(self):
         self.vision = cv2.VideoCapture(config.VIDEO_INPUT)
@@ -13,9 +12,6 @@ class vision:
         # the manager allows for editing of the hsv filter
         # savedHsvFilter loads the filter into memory, so it doesnt have to be retrieved constantly
         self.PersonalHSVManager = HSVManager(self.vision)
-        self.PersonalHSVManager.Retrieve_HSV_Filter() # initialises the hsv filter in the manager
-
-
 
     def mainLoop(self):
         # this is the comp vision obj
@@ -36,7 +32,7 @@ class vision:
                 break
 
             # this displayes the masked version of the current frame for line detection
-            self.PersonalHSVManager.Display_Masked_Frame()
+            self.PersonalHSVManager.Display_Track_Lines_Masked_Frame()
 
             # display the curr frame
             cv2.imshow('Live Video Feed', frame)
@@ -45,18 +41,20 @@ class vision:
             ### LIVE DEDUGGING INPUTS ###
             #############################
 
+            # grabs the key pressed
+            key = cv2.waitKey(1) & 0xFF
+
             # checks for an exit input
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if key == ord('q'):
                 break
 
             # checks for an input to change the hsv filter
-            if cv2.waitKey(1) & 0xFF == ord('h'):
+            if key == ord('h'):
                 # destorys the current maked frame and for the HSVManager to display it within itself 
-                cv2.destroyWindow("Masked Frame")
+                cv2.destroyWindow(config.MASKED_FRAME_TRACK_LINES)
                 # this applys the new HSV filter after we edit it and save it 
                 self.PersonalHSVManager.Apply_New_Filter()
                 
-
         # frees anything stored in memory
         self.vision.release()
         cv2.destroyAllWindows()

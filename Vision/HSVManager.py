@@ -7,6 +7,7 @@ class HSVManager:
 
     TRACKBAR_WINDOW = "Track Window"
 
+    # HSV manager constructor
     def __init__(self, vision):
         self.vision = vision
 
@@ -29,7 +30,7 @@ class HSVManager:
             # and now it is loaded
             self.savedHsvFilter = self.Retrieve_HSV_Filter()
 
-
+    # displays the current masked frame
     def Display_Masked_Frame(self):
         # gets the frame in a hsv colour space
         good, frame = self.vision.read()
@@ -38,12 +39,15 @@ class HSVManager:
         if not good:
             print("Error: Can't receive frame. Exiting...")
 
+        # converts the current frame into HSV and then creates a mask for Blue and Yello values
         hsvFrame = cv2.cvtColor(frame, config.HSV_SPACE)
         blueHsvMask = cv2.inRange(hsvFrame, self.savedHsvFilter.Get_Blue_Min_Vals_Arr(), self.savedHsvFilter.Get_Blue_Max_Vals_Arr())
         yellowHsvMask = cv2.inRange(hsvFrame, self.savedHsvFilter.Get_Yellow_Min_Vals_Arr(), self.savedHsvFilter.Get_Yellow_Max_Vals_Arr())
 
+        # this combines the yellow and blue masks
         linesHsvMask = cv2.bitwise_or(blueHsvMask, yellowHsvMask)
 
+        # this applys the mask on the current frame and saves tha masked frame 
         maskedframe = cv2.bitwise_and(frame, frame, mask=linesHsvMask)
 
         # display the HSV masked frame
@@ -52,13 +56,17 @@ class HSVManager:
     # this opens the HSV GUI and allows the user to save a new HSV filter
     def Save_HSV_Filter(self, hsvFilter=None):
         if hsvFilter is None:
+            # creates the HSV editor GUI
             self.HSV_GUI_Adjustments()
             print("Press s to save the HSV Filter")
             
-            while True:  
+            # this creates another infinite loop that is used to preview the new HSV settings
+            while True:
+                # gets teh current hsv values from the GUI sliders and then displays the Masked frame
                 self.savedHsvFilter = self.Get_HSV_Filter_From_GUI()
                 self.Display_Masked_Frame()          
                 
+                # this waits for an input "s" which will then save the new HSV filter in a file and then end the HSV editing process 
                 if cv2.waitKey(1) & 0xFF == ord('s'):
                     self.savedHsvFilter = self.Get_HSV_Filter_From_GUI()
                     cv2.destroyWindow(self.TRACKBAR_WINDOW)
@@ -112,6 +120,5 @@ class HSVManager:
         hsvfilter.yellow_hMax = cv2.getTrackbarPos("yellow_hMax", self.TRACKBAR_WINDOW)
         hsvfilter.yellow_sMax = cv2.getTrackbarPos("yellow_sMax", self.TRACKBAR_WINDOW)
         hsvfilter.yellow_vMax = cv2.getTrackbarPos("yellow_vMax", self.TRACKBAR_WINDOW)
-
 
         return hsvfilter

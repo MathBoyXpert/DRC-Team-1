@@ -1,6 +1,5 @@
 import cv2
 import config
-from HSVfilters import HSVFilter
 from HSVManager import HSVManager
 
 class vision:
@@ -36,14 +35,14 @@ class vision:
                 print("Error: Can't receive frame. Exiting...")
                 break
 
+            # this displayes the masked version of the current frame for line detection
             self.PersonalHSVManager.Display_Masked_Frame()
 
             # display the curr frame
             cv2.imshow('Live Video Feed', frame)
 
-
             #############################
-            ### LIVE BEDUGGING INPUTS ###
+            ### LIVE DEDUGGING INPUTS ###
             #############################
 
             # checks for an exit input
@@ -52,7 +51,9 @@ class vision:
 
             # checks for an input to change the hsv filter
             if cv2.waitKey(1) & 0xFF == ord('h'):
+                # destorys the current maked frame and for the HSVManager to display it within itself 
                 cv2.destroyWindow("Masked Frame")
+                # this applys the new HSV filter after we edit it and save it 
                 self.PersonalHSVManager.Apply_New_Filter()
                 
 

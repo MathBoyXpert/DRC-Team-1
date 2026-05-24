@@ -2,11 +2,15 @@ import cv2
 
 # this is for changing the video input (0..*) with the number
 VIDEO_INPUT = 0
+
+TARGET_FPS = 1/100
+
 # this is to indivcate the HSV space, to save on processing power utilise COLOR_BGR2HSV instead of COLOR_BGR2HSV_FULL
 HSV_SPACE = cv2.COLOR_BGR2HSV_FULL
 
-### NAMES OF OPEN CV WINDOWS ###
 
+
+### NAMES OF OPEN CV WINDOWS ###
 # Filter Names
 OBSTACLE_HSV = "Obstacle HSV Filter"
 TRACK_COMPLETION_HSV = "Track Completion HSV Filter"
@@ -39,8 +43,8 @@ Hsv_Filter_File_Names_Dict = {
 
 # Names for the HSV Filter Files for storage for the filters
 Display_The_Frame = {
-    OBSTACLE_HSV: False,
-    TRACK_COMPLETION_HSV: False,
-    TRACK_LINES_HSV: False,
-    RIVAL_BOT_HSV: False
+    OBSTACLE_HSV: True,
+    TRACK_COMPLETION_HSV: True,
+    TRACK_LINES_HSV: True,
+    RIVAL_BOT_HSV: True
 }

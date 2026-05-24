@@ -46,14 +46,10 @@ class TrackLinesHSVFilter(HSVFilterInterface):
         return np.array([self.hsvValueMap["blue_hMax"], self.hsvValueMap["blue_sMax"], self.hsvValueMap["blue_vMax"]])
     
     # displays the current masked frame
-    def Display_Masked_Frame(self):
-        # gets the latest frame
-        frame = VisionInput().Get_Frame()
-
-        # converts the current frame into HSV and then creates a mask for Blue and Yellow values
-        hsvFrame = cv2.cvtColor(frame, config.HSV_SPACE)
-        blueHsvMask = cv2.inRange(hsvFrame, self.Get_Blue_Min_Vals_Arr(), self.Get_Blue_Max_Vals_Arr())
-        yellowHsvMask = cv2.inRange(hsvFrame, self.Get_Yellow_Min_Vals_Arr(), self.Get_Yellow_Max_Vals_Arr())
+    def Display_Masked_Frame(self, frame, hsv_frame):        
+        # mask for Blue and Yellow values
+        blueHsvMask = cv2.inRange(hsv_frame, self.Get_Blue_Min_Vals_Arr(), self.Get_Blue_Max_Vals_Arr())
+        yellowHsvMask = cv2.inRange(hsv_frame, self.Get_Yellow_Min_Vals_Arr(), self.Get_Yellow_Max_Vals_Arr())
 
         # this combines the yellow and blue masks
         linesHsvMask = cv2.bitwise_or(blueHsvMask, yellowHsvMask)

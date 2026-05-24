@@ -119,13 +119,9 @@ class HSVFilterInterface(ABC):
             self.hsvValueMap[hsvAttribute] = cv2.getTrackbarPos(hsvAttribute, self.Get_Filter_GUI_Name())
             
     # displays the current masked frame
-    def Display_Masked_Frame(self):
-        # gets the latest frame
-        frame = VisionInput().Get_Frame()
-
-        # converts the current frame into HSV and then creates a mask for the HSV values
-        hsvFrame = cv2.cvtColor(frame, config.HSV_SPACE)
-        hsvMask = cv2.inRange(hsvFrame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
+    def Display_Masked_Frame(self, frame, hsv_frame):
+        # creates a mask for the HSV values
+        hsvMask = cv2.inRange(hsv_frame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
 
         # this applys the mask on the current frame and saves the masked frame
         maskedframe = cv2.bitwise_and(frame, frame, mask=hsvMask)

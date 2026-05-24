@@ -1,8 +1,13 @@
 import config
 import cv2
+import threading
+import time
 class VisionInput:
     _instance = None
     _video_capture = None
+    _curr_frame = None
+    _curr_hsv_frame = None
+    _ingestion = True
     
 
     # this new function ensures the instance of Vision that is created is a singleton instance
@@ -30,16 +35,41 @@ class VisionInput:
         return self._video_capture
     
     # returns the most recently produced frame
-    def Get_Frame(self):
-        good, frame = self._video_capture.read()
-        # checks for a bad video read
-        if not good:
-            print("Error: Can't receive frame. Exiting...")
-            raise VisionError("The vision object could not produce a good frame")
+    def Frame_Ingestion(self):
+        print("Starting Frame Ingestion....")
+        while self._ingestion:
+            # target fps
+            time.sleep(config.TARGET_FPS)
+            good, frame = self._video_capture.read()
+            # checks for a bad video read
+            if not good:
+                print("Error: Can't receive frame. Exiting...")
+                raise VisionError("The vision object could not produce a good frame")
+            
+            # updates the frame
+            self._curr_frame = frame;
+            self._curr_hsv_frame = cv2.cvtColor(frame, config.HSV_SPACE)
         
-        # returns the frame
-        return frame
-
+        print("Ending Frame Ingestion....")
+        self._video_capture.release()
+        
+    # returns the most recently ingested frame
+    def Get_Frame(self):
+        return self._curr_frame
+    
+    # returns the most recently ingested frame
+    def Get_HSV_Frame(self):
+        return self._curr_hsv_frame
+            
+    # starts the vision ingestion thread
+    def Start_Vision_IO(self): 
+        self._ingestion = True
+        visionIOTHread = threading.Thread(target=self.Frame_Ingestion)
+        visionIOTHread.start()
+        
+    # Should end the Vision Ingestion Thread
+    def End_Vision_IO(self): 
+        self._ingestion = False
     
 class VisionError(Exception):
     pass

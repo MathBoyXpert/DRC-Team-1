@@ -29,14 +29,16 @@ class vision:
             frame = VisionInput().Get_Frame()            
 
             # this displays the masked version of the current frame for each HSV Filter
+            frame = VisionInput().Get_Frame()
+            hsvFrame = VisionInput().Get_HSV_Frame()
             for filters in self.HSVManager.values():
-                filters.Display_Masked_Frame()
+                filters.Display_Masked_Frame(frame=frame, hsv_frame=hsvFrame)
 
             # display the curr frame
             cv2.imshow('Live Video Feed', frame)
 
             #############################
-            ### LIVE DEDUCING INPUTS ###
+            ### LIVE DEBUGGING INPUTS ###
             #############################
 
             # grabs the key pressed
@@ -56,5 +58,4 @@ class vision:
                     filters.Apply_New_Filter()
                 
         # frees anything stored in memory
-        VisionInput().Get_Vision().release()
         cv2.destroyAllWindows()

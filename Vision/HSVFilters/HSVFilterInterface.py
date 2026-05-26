@@ -7,11 +7,16 @@ from VisionInput import VisionInput
 
 class HSVFilterInterface(ABC):
 
-    # this makes it so the masked hsv frame is displayed reguardless of config settings
-    isFilterBeingEdited = False
+    
 
     def __init__(self):
         self.Retrieve_HSV_Filter() # initialises the hsv filter
+        # this makes it so the masked hsv frame is displayed reguardless of config settings
+        self.isFilterBeingEdited = False
+        self.hsvMask = None
+        self.c = None
+        self.cx = None
+        self.cy = None
 
     @abstractmethod
     def debug_print_filters(self):
@@ -77,8 +82,9 @@ class HSVFilterInterface(ABC):
         while True:
             # gets the current hsv values from the GUI sliders and then displays the Masked frame
             self.Update_HSV_Filter_From_GUI()
-            self.Display_Masked_Frame()
-            
+            # this automatically updates the masked frame and contours in accordance with the values in the GUI
+            self.Filter_Main_Process()
+
             # this waits for an input "s" which will then save the new HSV filter in a file and then end the HSV editing process 
             if cv2.waitKey(1) & 0xFF == ord('s'):
                 self.Update_HSV_Filter_From_GUI()
@@ -106,26 +112,69 @@ class HSVFilterInterface(ABC):
 
         # creating the trackbars to adjust HSV filtering
         for hsvAttribute in self.hsvList:
-            cv2.createTrackbar(hsvAttribute, self.Get_Filter_GUI_Name(), 0, 255, doNothing)
+            cv2.createTrackbar(hsvAttribute, self.Get_Filter_GUI_Name(), 0, config.HSV_MAX_VAL, doNothing)
             # Setting initial trackbar positions based on past filters
             cv2.setTrackbarPos(hsvAttribute, self.Get_Filter_GUI_Name(), self.hsvValueMap[hsvAttribute])
-            
-        
 
     # this gets the current details of the filter form the GUI and returns it as a HSVFilter Obj
     def Update_HSV_Filter_From_GUI(self):
         # getting the trackbar values for the HSV filtering
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = cv2.getTrackbarPos(hsvAttribute, self.Get_Filter_GUI_Name())
-            
-    # displays the current masked frame
-    def Display_Masked_Frame(self, frame, hsv_frame):
-        # creates a mask for the HSV values
-        hsvMask = cv2.inRange(hsv_frame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
+    # this is the main order in which interal functions should run
+    def Filter_Main_Process(self):
+        # this finds the new masked frame
+        self.Update_Masked_Frame(VisionInput().Get_HSV_Frame())
+        # this calculates the new contour
+        self.Find_Centroid()
+        # this displays the frame if allowed by the config
+        self.Display_Masked_Frame(VisionInput().Get_Frame()[0])
 
-        # this applys the mask on the current frame and saves the masked frame
-        maskedframe = cv2.bitwise_and(frame, frame, mask=hsvMask)
-        
+    # updates the current masked frame
+    def Update_Masked_Frame(self, hsv_frame):
+        # creates a mask for the HSV values
+        self.hsvMask = cv2.inRange(hsv_frame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
+
+    # this calculates and finds a contour on the current masked frame
+    def Find_Centroid(self):
+        # CHAIN_APPROX_SIMPLE only keeps corner points instead of every single single pixel in a contour
+        # cv2.RETR_EXTERNAL tells OpenCV to only look for and return the absolute outermost shapes
+        contours, _ = cv2.findContours(self.hsvMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # if at least 1 contour was found
+        if contours:
+            # get the largest contour 
+            self.c = max(contours, key=cv2.contourArea)
+            # this calculates a bunch of stuff on the pixels of the contoured frame to allow for centroid calculations
+            M = cv2.moments(self.c)
+            
+            # M["m00"] != 0 checks that there is at least 1 masked pixel
+            if M["m00"] != 0:
+                # this calculates the center of the masked pixels
+                # sum of x coordinates for masked pixels over the the total number of masked pixels
+                self.cx = int(M['m10'] / M['m00'])
+                # sum of x coordinates for masked pixels over the the total number of masked pixels                
+                self.cy = int(M['m01'] / M['m00'])
+            # this ensures that if a centroid can not be calculated then there is no old contour that is still saved
+            else:
+                self.c = None
+                self.cx = None
+                self.cy = None
+        else:
+            self.c = None
+            self.cx = None
+            self.cy = None
+    
+    # displays the current masked frame
+    def Display_Masked_Frame(self, frame): 
         # display the HSV masked frame if the current config allows
         if self.Should_Filtered_Frame_Be_Displayed() or self.isFilterBeingEdited:
+            # this applys the mask on the current frame
+            maskedframe = cv2.bitwise_and(frame, frame, mask=self.hsvMask)
+
+            # Draw target centroid and the contour outline together if a contour exists
+            if self.c is not None:
+                cv2.circle(maskedframe, (self.cx, self.cy), 5, (255, 255, 255), -1)
+                cv2.drawContours(maskedframe, [self.c], -1, (0, 255, 0), 1)
+
             cv2.imshow(self.Get_Filter_Frame_Name(), maskedframe)

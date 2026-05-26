@@ -8,6 +8,7 @@ class VisionInput:
     _curr_frame = None
     _curr_hsv_frame = None
     _ingestion = True
+    _frame_no = 0
     
 
     # this new function ensures the instance of Vision that is created is a singleton instance
@@ -49,13 +50,14 @@ class VisionInput:
             # updates the frame
             self._curr_frame = frame;
             self._curr_hsv_frame = cv2.cvtColor(frame, config.HSV_SPACE)
+            self._frame_no += 1
         
         print("Ending Frame Ingestion....")
         self._video_capture.release()
         
     # returns the most recently ingested frame
     def Get_Frame(self):
-        return self._curr_frame
+        return self._curr_frame, self._frame_no
     
     # returns the most recently ingested frame
     def Get_HSV_Frame(self):

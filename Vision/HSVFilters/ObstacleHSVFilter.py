@@ -12,7 +12,7 @@ class ObstacleHSVFilter(HSVFilterInterface):
 
         self.hsvList = ["purple_hMin", "purple_sMin", "purple_vMin", 
                         "purple_hMax", "purple_sMax", "purple_vMax"]
-        
+
         # populating the HSV values
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = 0;
@@ -22,7 +22,7 @@ class ObstacleHSVFilter(HSVFilterInterface):
     # This creates an array of the minimum HSV values for the purple mask
     def Get_Min_Vals_Arr(self):
         return np.array([self.hsvValueMap["purple_hMin"], self.hsvValueMap["purple_sMin"], self.hsvValueMap["purple_vMin"]])
-    
+
     # This creates an array of the maximum HSV values for the purple mask
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["purple_hMax"], self.hsvValueMap["purple_sMax"], self.hsvValueMap["purple_vMax"]])
@@ -33,7 +33,7 @@ class ObstacleHSVFilter(HSVFilterInterface):
         print("-" * 30)
         print("DEBUG: Current Obstacle (Purple) HSV Filters")
         print("-" * 30)
-        
+
         # purple Bot Filter
         print(f"[Purple FILTER]")
         print(f"  Min: H={self.purple_hMin}, S={self.purple_sMin}, V={self.purple_vMin}")

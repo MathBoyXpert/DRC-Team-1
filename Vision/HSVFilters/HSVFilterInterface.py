@@ -7,7 +7,7 @@ from VisionInput import VisionInput
 
 class HSVFilterInterface(ABC):
 
-    
+
 
     def __init__(self):
         self.Retrieve_HSV_Filter() # initialises the hsv filter
@@ -21,11 +21,11 @@ class HSVFilterInterface(ABC):
     @abstractmethod
     def debug_print_filters(self):
         pass
-    
+
     @abstractmethod
     def Get_Min_Vals_Arr(self):
         pass
-    
+
     @abstractmethod
     def Get_Max_Vals_Arr(self):
         pass
@@ -33,7 +33,7 @@ class HSVFilterInterface(ABC):
     @abstractmethod
     def Get_Filter_Name(self) -> str:
         pass
-    
+
     def Get_Filter_File_Name(self):
         return config.Hsv_Filter_File_Names_Dict[self.Get_Filter_Name()]
 
@@ -42,7 +42,7 @@ class HSVFilterInterface(ABC):
 
     def Get_Filter_Frame_Name(self):
         return config.Masked_Window_Names_Dict[self.Get_Filter_Name()]
-        
+
     # checks if I want the frame for the filter to be displayed (this can be changed in config)
     def Should_Filtered_Frame_Be_Displayed(self):
         return config.Display_The_Frame[self.Get_Filter_Name()]
@@ -54,7 +54,7 @@ class HSVFilterInterface(ABC):
         self.Save_HSV_Filter()
         # this then retrives the newly saved filter and applies it
         self.Retrieve_HSV_Filter()
-        
+
     # this retrieves the most recently saved HSV filter
     def Retrieve_HSV_Filter(self):
         # retrieve the HSV filter to use
@@ -62,7 +62,7 @@ class HSVFilterInterface(ABC):
             print(f"Loaded {self.Get_Filter_File_Name()} HSV Filter")
             with open(self.Get_Filter_File_Name(), 'rb') as file:
                 self.__dict__.update(pickle.load(file).__dict__)
-            
+
         # for the case where there is no saved HSV filter
         else:
             self.isFilterBeingEdited = True
@@ -77,7 +77,7 @@ class HSVFilterInterface(ABC):
         # creates the HSV editor GUI
         self.HSV_GUI_Adjustments()
         print("Press s to save the HSV Filter")
-        
+
         # this creates another infinite loop that is used to preview the new HSV settings
         while True:
             # gets the current hsv values from the GUI sliders and then displays the Masked frame
@@ -90,7 +90,7 @@ class HSVFilterInterface(ABC):
                 self.Update_HSV_Filter_From_GUI()
                 cv2.destroyWindow(self.Get_Filter_GUI_Name())
                 cv2.destroyWindow(self.Get_Filter_Frame_Name())
-                
+
                 # to signify that the hsv is no longer being edited, and to not save it in that state
                 self.isFilterBeingEdited = False
 
@@ -105,7 +105,7 @@ class HSVFilterInterface(ABC):
         # trackbar window constant is the name of the winodw, window normal allows it to be resized
         cv2.namedWindow(self.Get_Filter_GUI_Name(), cv2.WINDOW_NORMAL)
         cv2.resizeWindow(self.Get_Filter_GUI_Name(), 350, 700)
-        
+
         # basic function for the trackbar call back, not needed, hence do nothing
         def doNothing(self):
             pass    
@@ -147,7 +147,7 @@ class HSVFilterInterface(ABC):
             self.c = max(contours, key=cv2.contourArea)
             # this calculates a bunch of stuff on the pixels of the contoured frame to allow for centroid calculations
             M = cv2.moments(self.c)
-            
+
             # M["m00"] != 0 checks that there is at least 1 masked pixel
             if M["m00"] != 0:
                 # this calculates the center of the masked pixels
@@ -164,7 +164,7 @@ class HSVFilterInterface(ABC):
             self.c = None
             self.cx = None
             self.cy = None
-    
+
     # displays the current masked frame
     def Display_Masked_Frame(self, frame): 
         # display the HSV masked frame if the current config allows

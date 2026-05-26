@@ -9,7 +9,7 @@ class VisionInput:
     _curr_hsv_frame = None
     _ingestion = True
     _frame_no = 0
-    
+
 
     # this new function ensures the instance of Vision that is created is a singleton instance
     # this works by accessing class level attributes through cls where "_instance" is defined this is now unattached from any spesific instance
@@ -34,7 +34,7 @@ class VisionInput:
             raise VisionError("The vision object is not opened")
 
         return self._video_capture
-    
+
     # returns the most recently produced frame
     def Frame_Ingestion(self):
         print("Starting Frame Ingestion....")
@@ -46,32 +46,32 @@ class VisionInput:
             if not good:
                 print("Error: Can't receive frame. Exiting...")
                 raise VisionError("The vision object could not produce a good frame")
-            
+
             # updates the frame
             self._curr_frame = frame;
             self._curr_hsv_frame = cv2.cvtColor(frame, config.HSV_SPACE)
             self._frame_no += 1
-        
+
         print("Ending Frame Ingestion....")
         self._video_capture.release()
-        
+
     # returns the most recently ingested frame
     def Get_Frame(self):
         return self._curr_frame, self._frame_no
-    
+
     # returns the most recently ingested frame
     def Get_HSV_Frame(self):
         return self._curr_hsv_frame
-            
+
     # starts the vision ingestion thread
     def Start_Vision_IO(self): 
         self._ingestion = True
         visionIOTHread = threading.Thread(target=self.Frame_Ingestion)
         visionIOTHread.start()
-        
+
     # Should end the Vision Ingestion Thread
     def End_Vision_IO(self): 
         self._ingestion = False
-    
+
 class VisionError(Exception):
     pass

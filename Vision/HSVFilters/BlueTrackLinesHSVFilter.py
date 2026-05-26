@@ -12,7 +12,7 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
 
         self.hsvList = ["blue_hMin", "blue_sMin", "blue_vMin", 
                         "blue_hMax", "blue_sMax", "blue_vMax"]
-        
+
         # populating the HSV values
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = 0;
@@ -22,7 +22,7 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
     # This creates an array of the minimum HSV values for the blue mask
     def Get_Min_Vals_Arr(self):
         return np.array([self.hsvValueMap["blue_hMin"], self.hsvValueMap["blue_sMin"], self.hsvValueMap["blue_vMin"]])
-    
+
     # This creates an array of the maximum HSV values for the blue mask
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["blue_hMax"], self.hsvValueMap["blue_sMax"], self.hsvValueMap["blue_vMax"]])

@@ -10,11 +10,6 @@ from VisionInput import VisionInput
 from typing import Dict
 
 class vision:
-    # constants
-
-    # variables
-    
-    
     def __init__(self):
         # the manager allows for editing of the hsv filters
         # loads the filters into memory, so it doesn't have to be retrieved constantly
@@ -23,10 +18,10 @@ class vision:
                                                           config.OBSTACLE_HSV:              ObstacleHSVFilter(),
                                                           config.TRACK_COMPLETION_HSV:      TrackCompletionHSVFilter(),
                                                           config.RIVAL_BOT_HSV:             RivalBotHSVFilter()}
-        
+
         # tracks the last edited frame to ensure calculations arent performed on the same frame
         self.lastProcessedFrame = -1
-        
+
 
     def mainLoop(self):
         # captures the video input frame by frame
@@ -63,58 +58,6 @@ class vision:
                         cv2.destroyWindow(filters.Get_Filter_Frame_Name())
                     # this applies the new HSV filter after we edit it and save it 
                     filters.Apply_New_Filter()
-                
+
         # frees anything stored in memory
         cv2.destroyAllWindows()
-
-
-# # Find geometric contours (shapes) in the binary mask.
-#     # '1' refers to cv2.RETR_EXTERNAL (retrieves only the outermost contours).
-#     # cv2.CHAIN_APPROX_NONE stores all contour boundary points without compression.
-#     contours, hierarchy = cv2.findContours(mask, 1, cv2.CHAIN_APPROX_NONE)
-    
-#     # Check if at least one contour was found in the frame.
-#     if len(contours) > 0:
-        
-#         # Isolate the largest contour found based on physical area (helps filter out noise).
-#         c = max(contours, key=cv2.contourArea)
-        
-#         # Calculate the spatial moments of the largest contour.
-#         # Moments capture geometric properties like area, centroid, and orientation.
-#         M = cv2.moments(c)
-        
-#         # Prevent a division-by-zero error. 'm00' represents the total area of the contour.
-#         if M["m00"] != 0:
-            
-#             # Calculate the X-coordinate of the centroid (center of mass).
-#             # 'm10' is the first-order spatial moment for X.
-#             cx = int(M['m10'] / M['m00'])
-            
-#             # Calculate the Y-coordinate of the centroid.
-#             # 'm01' is the first-order spatial moment for Y.
-#             cy = int(M['m01'] / M['m00'])
-            
-#             # Print the calculated center coordinates to the console terminal for debugging.
-#             print("CX : " + str(cx) + " CY : " + str(cy))
-            
-#             # --- Steering Control Logic Based on Centroid X-Position ---
-#             # If the target centroid shifts too far to the right, command a left turn.
-#             if cx >= 120:
-#                 print("Turn Left")
-                
-#             # If the centroid stays safely in the center channel, maintain course.
-#             if cx < 120 and cx > 40:
-#                 print("On Track!")
-                
-#             # If the target centroid shifts too far to the left, command a right turn.
-#             if cx <= 40:
-#                 print("Turn Right")
-#             # -----------------------------------------------------------
-            
-#             # Draw a small, solid white circle at the centroid coordinates (cx, cy).
-#             # Radius = 5 pixels, Color = (255, 255, 255) [White], Thickness = -1 [Filled].
-#             cv2.circle(frame, (cx, cy), 5, (255, 255, 255), -1)
-            
-#     # Draw the outline of the largest detected contour 'c' back onto the original frame.
-#     # Contour Index = -1 (draws the specific passed contour), Color = (0, 255, 0) [Green], Thickness = 1.
-#     cv2.drawContours(frame, c, -1, (0, 255, 0), 1)

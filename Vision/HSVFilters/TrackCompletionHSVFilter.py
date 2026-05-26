@@ -12,7 +12,7 @@ class TrackCompletionHSVFilter(HSVFilterInterface):
 
         self.hsvList = ["green_hMin", "green_sMin", "green_vMin", 
                         "green_hMax", "green_sMax", "green_vMax"]
-        
+
         # populating the HSV values
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = 0;
@@ -22,7 +22,7 @@ class TrackCompletionHSVFilter(HSVFilterInterface):
     # This creates an array of the minimum HSV values for the green mask
     def Get_Min_Vals_Arr(self):
         return np.array([self.hsvValueMap["green_hMin"], self.hsvValueMap["green_sMin"], self.hsvValueMap["green_vMin"]])
-    
+
     # This creates an array of the maximum HSV values for the green mask
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["green_hMax"], self.hsvValueMap["green_sMax"], self.hsvValueMap["green_vMax"]])
@@ -33,7 +33,7 @@ class TrackCompletionHSVFilter(HSVFilterInterface):
         print("-" * 30)
         print("DEBUG: Current Track Completion (Green) HSV Filters")
         print("-" * 30)
-        
+
         # green Bot Filter
         print(f"[Green FILTER]")
         print(f"  Min: H={self.green_hMin}, S={self.green_sMin}, V={self.green_vMin}")

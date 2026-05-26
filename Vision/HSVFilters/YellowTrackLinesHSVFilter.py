@@ -12,7 +12,7 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
 
         self.hsvList = ["yellow_hMin", "yellow_sMin", "yellow_vMin", 
                         "yellow_hMax", "yellow_sMax", "yellow_vMax"]
-        
+
         # populating the HSV values
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = 0;
@@ -22,7 +22,7 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
     # This creates an array of the minimum HSV values for the yellow mask
     def Get_Min_Vals_Arr(self):
         return np.array([self.hsvValueMap["yellow_hMin"], self.hsvValueMap["yellow_sMin"], self.hsvValueMap["yellow_vMin"]])
-    
+
     # This creates an array of the maximum HSV values for the yellow mask
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["yellow_hMax"], self.hsvValueMap["yellow_sMax"], self.hsvValueMap["yellow_vMax"]])

@@ -12,7 +12,7 @@ class RivalBotHSVFilter(HSVFilterInterface):
 
         self.hsvList = ["red_hMin", "red_sMin", "red_vMin", 
                         "red_hMax", "red_sMax", "red_vMax"]
-        
+
         # populating the HSV values
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = 0;
@@ -22,7 +22,7 @@ class RivalBotHSVFilter(HSVFilterInterface):
     # This creates an array of the minimum HSV values for the red mask
     def Get_Min_Vals_Arr(self):
         return np.array([self.hsvValueMap["red_hMin"], self.hsvValueMap["red_sMin"], self.hsvValueMap["red_vMin"]])
-    
+
     # This creates an array of the maximum HSV values for the red mask
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["red_hMax"], self.hsvValueMap["red_sMax"], self.hsvValueMap["red_vMax"]])
@@ -33,7 +33,7 @@ class RivalBotHSVFilter(HSVFilterInterface):
         print("-" * 30)
         print("DEBUG: Current Rival Bot (Red) HSV Filters")
         print("-" * 30)
-        
+
         # Red Bot Filter
         print(f"[Red FILTER]")
         print(f"  Min: H={self.red_hMin}, S={self.red_sMin}, V={self.red_vMin}")

@@ -55,13 +55,9 @@ class VisionInput:
         print("Ending Frame Ingestion....")
         self._video_capture.release()
 
-    # returns the most recently ingested frame
+    # returns the most recently ingested frames
     def Get_Frame(self):
-        return self._curr_frame, self._frame_no
-
-    # returns the most recently ingested frame
-    def Get_HSV_Frame(self):
-        return self._curr_hsv_frame
+        return self._curr_frame, self._curr_hsv_frame, self._frame_no
 
     # starts the vision ingestion thread
     def Start_Vision_IO(self): 

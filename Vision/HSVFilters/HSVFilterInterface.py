@@ -83,7 +83,7 @@ class HSVFilterInterface(ABC):
             # gets the current hsv values from the GUI sliders and then displays the Masked frame
             self.Update_HSV_Filter_From_GUI()
             # this automatically updates the masked frame and contours in accordance with the values in the GUI
-            self.Filter_Main_Process()
+            self.Filter_Main_Process(VisionInput().Get_Frame()[0], VisionInput().Get_Frame()[1])
 
             # this waits for an input "s" which will then save the new HSV filter in a file and then end the HSV editing process 
             if cv2.waitKey(1) & 0xFF == ord('s'):
@@ -122,13 +122,13 @@ class HSVFilterInterface(ABC):
         for hsvAttribute in self.hsvList:
             self.hsvValueMap[hsvAttribute] = cv2.getTrackbarPos(hsvAttribute, self.Get_Filter_GUI_Name())
     # this is the main order in which interal functions should run
-    def Filter_Main_Process(self):
+    def Filter_Main_Process(self, frame, hsvFrame):
         # this finds the new masked frame
-        self.Update_Masked_Frame(VisionInput().Get_HSV_Frame())
+        self.Update_Masked_Frame(hsvFrame)
         # this calculates the new contour
         self.Find_Centroid()
         # this displays the frame if allowed by the config
-        self.Display_Masked_Frame(VisionInput().Get_Frame()[0])
+        self.Display_Masked_Frame(frame)
 
     # updates the current masked frame
     def Update_Masked_Frame(self, hsv_frame):

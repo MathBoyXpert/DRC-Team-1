@@ -27,14 +27,14 @@ class vision:
         # captures the video input frame by frame
         while True:
             # this displays the masked version of the current frame for each HSV Filter
-            frame, currFrameNo = VisionInput().Get_Frame()
+            frame, hsvFrame, currFrameNo = VisionInput().Get_Frame()
             # checks that the frame being retrieved isnt a frame that has already been calculated
             if self.lastProcessedFrame != currFrameNo:
                 # updates the last processed frame to the frame now being processed
                 self.lastProcessedFrame = currFrameNo
                 for filters in self.HSVManager.values():
                     # The update masked frame function will also display the masked frame if needed, this is editable in the config
-                    filters.Filter_Main_Process()
+                    filters.Filter_Main_Process(frame=frame, hsvFrame=hsvFrame)
 
                 # display the curr frame
                 cv2.imshow('Live Video Feed', frame)

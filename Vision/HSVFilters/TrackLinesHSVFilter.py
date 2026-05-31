@@ -21,6 +21,8 @@ class TrackLinesHSVFilter:
         """
         N = 9
 
+        min_pixels = 0
+
         window_size = histogram.shape[0] // N
 
         for i in range(N):
@@ -30,6 +32,23 @@ class TrackLinesHSVFilter:
 
             x_left = x_base - window_size
             x_right = x_base + window_size
+
+            non_zero_x, non_zero_y = np.nonzero(histogram)
+
+            good_indices = ((non_zero_y >= y_lo) & (non_zero_y < y_hi) &
+                            (non_zero_x >= x_left) & (non_zero_x < x_right))
+            
+            lane_pixels_x = non_zero_x[good_indices]
+            lane_pixels_y = non_zero_y[good_indices]
+
+            if len(lane_pixels_x) > min_pixels and len(lane_pixels_y) > min_pixels:
+                x_base = np.mean(lane_pixels_x)
+
+        return x_base
+                
+                
+
+            
 
             
 

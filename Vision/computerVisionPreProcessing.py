@@ -8,6 +8,7 @@ from HSVFilters.TrackCompletionHSVFilter import TrackCompletionHSVFilter
 from HSVFilters.HSVFilterInterface import HSVFilterInterface
 from VisionInput import VisionInput
 from typing import Dict
+import numpy as np
 
 class vision:
     def __init__(self):
@@ -32,10 +33,20 @@ class vision:
             if self.lastProcessedFrame != currFrameNo:
                 # updates the last processed frame to the frame now being processed
                 self.lastProcessedFrame = currFrameNo
+                framesToCombine = np.empty(5)
                 for filters in self.HSVManager.values():
-                    # The update masked frame function will also display the masked frame if needed, this is editable in the config
-                    filters.Filter_Main_Process(frame=frame, hsvFrame=hsvFrame)
-
+                    # The update masked frame function will also display the masked frame of individual filters if needed, this is editable in the config
+                    # This also allows us to determine if the combined frame with all processes done should be displayed
+                    if config.DISPLAY_PROCCESSED_OUTPUT:
+                        np.append(framesToCombine, filters.Filter_Main_Process(frame=frame, hsvFrame=hsvFrame))
+                    else:
+                        filters.Filter_Main_Process(frame=frame, hsvFrame=hsvFrame)
+                
+                if config.DISPLAY_PROCCESSED_OUTPUT:
+                    proccessedFrame = cv2.vconcat(framesToCombine)
+                    cv2.imshow('Processed Video Feed', proccessedFrame)
+                    
+                        
                 # display the curr frame
                 cv2.imshow('Live Video Feed', frame)
 
@@ -58,6 +69,10 @@ class vision:
                         cv2.destroyWindow(filters.Get_Filter_Frame_Name())
                     # this applies the new HSV filter after we edit it and save it 
                     filters.Apply_New_Filter()
+            
+            # this toggles the display for displaying a processed frame
+            if key == ord('d'):
+                config.DISPLAY_PROCCESSED_OUTPUT = not config.DISPLAY_PROCCESSED_OUTPUT
 
         # frees anything stored in memory
         cv2.destroyAllWindows()

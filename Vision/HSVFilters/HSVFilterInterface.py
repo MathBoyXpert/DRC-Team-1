@@ -128,14 +128,14 @@ class HSVFilterInterface(ABC):
         # this calculates the new contour
         self.Find_Centroid()
         # this displays the frame if allowed by the config
-        self.Display_Masked_Frame(frame)
+        return self.Display_Masked_Frame(frame)
 
     # updates the current masked frame
     def Update_Masked_Frame(self, hsv_frame):
         # creates a mask for the HSV values
         self.hsvMask = cv2.inRange(hsv_frame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
 
-    # this calculates and finds a contour on the current masked frame
+    # this calculates and finds a contour on the current masked frame and also bounding boxes
     def Find_Centroid(self):
         # CHAIN_APPROX_SIMPLE only keeps corner points instead of every single single pixel in a contour
         # cv2.RETR_EXTERNAL tells OpenCV to only look for and return the absolute outermost shapes
@@ -143,6 +143,11 @@ class HSVFilterInterface(ABC):
 
         # if at least 1 contour was found
         if contours:
+            # this is calculates the for bounding box based on the contour if enabled in the config
+            if config.Display_Bounding_Box[self.Get_Filter_Name()]:
+                for contour in contours:
+                    self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
+            
             # get the largest contour 
             self.c = max(contours, key=cv2.contourArea)
             # this calculates a bunch of stuff on the pixels of the contoured frame to allow for centroid calculations
@@ -168,13 +173,22 @@ class HSVFilterInterface(ABC):
     # displays the current masked frame
     def Display_Masked_Frame(self, frame): 
         # display the HSV masked frame if the current config allows
-        if self.Should_Filtered_Frame_Be_Displayed() or self.isFilterBeingEdited:
+        if self.Should_Filtered_Frame_Be_Displayed() or self.isFilterBeingEdited or config.DISPLAY_PROCCESSED_OUTPUT:
             # this applys the mask on the current frame
             maskedframe = cv2.bitwise_and(frame, frame, mask=self.hsvMask)
 
             # Draw target centroid and the contour outline together if a contour exists
             if self.c is not None:
+                # this draws the contours, the centre of the contoured area and bounding boxes
                 cv2.circle(maskedframe, (self.cx, self.cy), 5, (255, 255, 255), -1)
                 cv2.drawContours(maskedframe, [self.c], -1, (0, 255, 0), 1)
+                if config.Display_Bounding_Box[self.Get_Filter_Name()]:
+                    cv2.rectangle(maskedframe, (self.x, self.y), (self.x + self.w, self.y + self.h), (0, 0, 255), 5)
 
-            cv2.imshow(self.Get_Filter_Frame_Name(), maskedframe)
+            # this displayes the individual filters hsv frame            
+            if self.Should_Filtered_Frame_Be_Displayed() or self.isFilterBeingEdited:
+                cv2.imshow(self.Get_Filter_Frame_Name(), maskedframe)
+                
+            # this is for creating a unified frame where everything processed is displayed
+            if config.DISPLAY_PROCCESSED_OUTPUT:
+                return maskedframe

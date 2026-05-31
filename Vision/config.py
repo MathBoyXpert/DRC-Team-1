@@ -3,6 +3,10 @@ import cv2
 # this is for changing the video input (0..*) with the number
 VIDEO_INPUT = 0
 
+# this tells the program if everything should that is procesed (e.g contours etc) should be displayed tgt
+# this is editable at runtime by pressing 'D'
+DISPLAY_PROCCESSED_OUTPUT = True
+
 TARGET_FPS = 1/100
 
 # this is to indivcate the HSV space, to save on processing power utilise COLOR_BGR2HSV instead of COLOR_BGR2HSV_FULL
@@ -53,5 +57,14 @@ Display_The_Frame = {
     TRACK_COMPLETION_HSV: True,
     BLUE_TRACK_LINES_HSV: True,
     YELLOW_TRACK_LINES_HSV: True,
+    RIVAL_BOT_HSV: True
+}
+
+# Names for the HSV Filter Files for storage for the filters
+Display_Bounding_Box = {
+    OBSTACLE_HSV: True,
+    TRACK_COMPLETION_HSV: True,
+    BLUE_TRACK_LINES_HSV: False,
+    YELLOW_TRACK_LINES_HSV: False,
     RIVAL_BOT_HSV: True
 }

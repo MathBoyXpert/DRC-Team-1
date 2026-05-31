@@ -19,6 +19,7 @@ TRACK_COMPLETION_HSV = "Track Completion HSV Filter"
 YELLOW_TRACK_LINES_HSV = "Yellow Track Lines HSV Filter (Left)"
 BLUE_TRACK_LINES_HSV = "Blue Track Lines HSV Filter"
 RIVAL_BOT_HSV = "Rival Bot HSV Filter"
+TRACK_LINES_HSV = "Track Lines HSV Filter"
 
 # Names for the HSV Filter Track Bars
 Trackbar_Names_Dict = {
@@ -26,7 +27,8 @@ Trackbar_Names_Dict = {
     TRACK_COMPLETION_HSV: "Track Bar Window (Track Completion)",
     YELLOW_TRACK_LINES_HSV: "Yellow Track Lines Track Bar Window (Left)",
     BLUE_TRACK_LINES_HSV: "Blue Track Lines Track Bar Window (Left)",
-    RIVAL_BOT_HSV: "Track Bar Window (Rival Bot)"
+    RIVAL_BOT_HSV: "Track Bar Window (Rival Bot)",
+    TRACK_LINES_HSV: "Track Bar Lines"
 }
 
 # Names for the HSV Filter Masked Windows
@@ -35,7 +37,8 @@ Masked_Window_Names_Dict = {
     TRACK_COMPLETION_HSV: "Masked Track Completion Window",
     YELLOW_TRACK_LINES_HSV: "Masked Yellow Track Lines Window",
     BLUE_TRACK_LINES_HSV: "Masked Blue Track Lines Window",
-    RIVAL_BOT_HSV: "Masked Rival Bot Window"
+    RIVAL_BOT_HSV: "Masked Rival Bot Window",
+    TRACK_LINES_HSV: "Masked Track Lines Window"
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -44,7 +47,8 @@ Hsv_Filter_File_Names_Dict = {
     TRACK_COMPLETION_HSV: "TrackCompletionHsvFilter.pkl",
     YELLOW_TRACK_LINES_HSV: "YellowTrackLinesHsvFilter.pkl",
     BLUE_TRACK_LINES_HSV: "BlueTrackLinesHsvFilter.pkl",
-    RIVAL_BOT_HSV: "RivalBotHsvFilter.pkl"
+    RIVAL_BOT_HSV: "RivalBotHsvFilter.pkl",
+    TRACK_LINES_HSV: "TrackLinesHsvFilter.pkl"
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -53,5 +57,6 @@ Display_The_Frame = {
     TRACK_COMPLETION_HSV: True,
     BLUE_TRACK_LINES_HSV: True,
     YELLOW_TRACK_LINES_HSV: True,
-    RIVAL_BOT_HSV: True
+    RIVAL_BOT_HSV: True,
+    TRACK_LINES_HSV: True
 }

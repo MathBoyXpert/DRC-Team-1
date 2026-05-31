@@ -6,6 +6,7 @@ from HSVFilters.ObstacleHSVFilter import ObstacleHSVFilter
 from HSVFilters.RivalBotHSVFilter import RivalBotHSVFilter
 from HSVFilters.TrackCompletionHSVFilter import TrackCompletionHSVFilter
 from HSVFilters.HSVFilterInterface import HSVFilterInterface
+from HSVFilters.TrackLinesHSVFilter import TrackLinesHSVFilter
 from VisionInput import VisionInput
 from typing import Dict
 
@@ -17,7 +18,9 @@ class vision:
                                                           config.BLUE_TRACK_LINES_HSV:      BlueTrackLinesHSVFilter(),
                                                           config.OBSTACLE_HSV:              ObstacleHSVFilter(),
                                                           config.TRACK_COMPLETION_HSV:      TrackCompletionHSVFilter(),
-                                                          config.RIVAL_BOT_HSV:             RivalBotHSVFilter()}
+                                                          config.RIVAL_BOT_HSV:             RivalBotHSVFilter(),
+                                                          config.TRACK_LINES_HSV:           TrackLinesHSVFilter()
+                                                          }
 
         # tracks the last edited frame to ensure calculations arent performed on the same frame
         self.lastProcessedFrame = -1

@@ -13,12 +13,16 @@ class TrackLinesHSVFilter:
         rightx_base = np.argmax(histogram[midpoint:]) + midpoint
 
 	    # 3) Step through windows to track the line upward
-        # Let the window size by 9. We can change this if required.
+        new_leftx_base = TrackLinesHSVFilter.window_shift(histogram, leftx_base)
+        new_rightx_base = TrackLinesHSVFilter.window_shift(histogram, rightx_base)
+
+        return new_leftx_base, new_rightx_base
 
     def window_shift(histogram, x_base):
         """
         This function aims to determine if the windows can follow the line provided.
         """
+        # Divide the image up into 9 "windows". We can change this if necessary. 
         N = 9
 
         min_pixels = 0
@@ -45,9 +49,9 @@ class TrackLinesHSVFilter:
                 x_base = np.mean(lane_pixels_x)
 
         return x_base
-                
-                
-
+    
+    
+    
             
 
             

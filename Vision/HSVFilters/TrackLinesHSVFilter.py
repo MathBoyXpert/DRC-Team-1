@@ -45,6 +45,7 @@ class TrackLinesHSVFilter:
             lane_pixels_x = non_zero_x[good_indices]
             lane_pixels_y = non_zero_y[good_indices]
 
+            ## If there are enough lane pixels detected, change the base
             if len(lane_pixels_x) > min_pixels and len(lane_pixels_y) > min_pixels:
                 x_base = np.mean(lane_pixels_x)
 

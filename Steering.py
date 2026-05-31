@@ -7,7 +7,6 @@ MAX_ANGLE = 40
 MIN_ANGLE = -40
 
 class Steering:
-
     def compute_steering_angle(control):
         if abs(control) < 10:
             return 0
@@ -17,3 +16,5 @@ class Steering:
 
         steering_angle = -max(min(desired_angle_deg, MAX_ANGLE), MIN_ANGLE)
         return steering_angle
+    
+    

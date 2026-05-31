@@ -127,6 +127,7 @@ class HSVFilterInterface(ABC):
         self.Update_Masked_Frame(hsvFrame)
         # this calculates the new contour
         self.Find_Centroid()
+
         # this displays the frame if allowed by the config
         self.Display_Masked_Frame(frame)
 

@@ -2,10 +2,11 @@ import numpy as np
 import cv2
 import os
 
-class TrackLinesHSVFilter:
-    def find_lane_pixels(binary_warped):
+class TrackLinesFilter:
+    def find_lane_pixels(frame):
+
 	    # 1) Take a histogram of the bottom half of the image
-        histogram = np.sum(binary_warped[binary_warped.shape[0]//2:,:], axis=0)
+        histogram = np.sum(frame[frame.shape[0]//2:,:], axis=0)
 
 	    # 2) Find the peak of the left and right halves of the histogram
         midpoint = int(histogram.shape[0] // 2)
@@ -13,8 +14,8 @@ class TrackLinesHSVFilter:
         rightx_base = np.argmax(histogram[midpoint:]) + midpoint
 
 	    # 3) Step through windows to track the line upward
-        new_leftx_base = TrackLinesHSVFilter.window_shift(histogram, leftx_base)
-        new_rightx_base = TrackLinesHSVFilter.window_shift(histogram, rightx_base)
+        new_leftx_base = TrackLinesFilter.window_shift(histogram, leftx_base)
+        new_rightx_base = TrackLinesFilter.window_shift(histogram, rightx_base)
 
         return new_leftx_base, new_rightx_base
 

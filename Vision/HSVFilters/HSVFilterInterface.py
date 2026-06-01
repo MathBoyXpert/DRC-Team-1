@@ -4,7 +4,7 @@ import pickle
 import os
 import config
 from VisionInput import VisionInput
-
+from .TrackLinesFilter import TrackLinesFilter
 class HSVFilterInterface(ABC):
 
 
@@ -17,6 +17,7 @@ class HSVFilterInterface(ABC):
         self.c = None
         self.cx = None
         self.cy = None
+        self.trackLines = TrackLinesFilter()
 
     @abstractmethod
     def debug_print_filters(self):
@@ -128,6 +129,7 @@ class HSVFilterInterface(ABC):
         # this calculates the new contour
         self.Find_Centroid()
 
+        self.trackLines.find_lane_pixels(hsvFrame)
         # this displays the frame if allowed by the config
         self.Display_Masked_Frame(frame)
 

@@ -6,7 +6,6 @@ from HSVFilters.ObstacleHSVFilter import ObstacleHSVFilter
 from HSVFilters.RivalBotHSVFilter import RivalBotHSVFilter
 from HSVFilters.TrackCompletionHSVFilter import TrackCompletionHSVFilter
 from HSVFilters.HSVFilterInterface import HSVFilterInterface
-from Vision.HSVFilters.TrackLinesFilter import TrackLinesHSVFilter
 from VisionInput import VisionInput
 from typing import Dict
 

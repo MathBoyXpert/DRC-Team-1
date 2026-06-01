@@ -3,8 +3,7 @@ import cv2
 import os
 
 class TrackLinesFilter:
-    def find_lane_pixels(frame):
-
+    def find_lane_pixels(self, frame):
 	    # 1) Take a histogram of the bottom half of the image
         histogram = np.sum(frame[frame.shape[0]//2:,:], axis=0)
 
@@ -14,14 +13,15 @@ class TrackLinesFilter:
         rightx_base = np.argmax(histogram[midpoint:]) + midpoint
 
 	    # 3) Step through windows to track the line upward
-        new_leftx_base = TrackLinesFilter.window_shift(histogram, leftx_base)
-        new_rightx_base = TrackLinesFilter.window_shift(histogram, rightx_base)
+        new_leftx_base = self.window_shift(histogram, leftx_base)
+        new_rightx_base = self.window_shift(histogram, rightx_base)
 
         return new_leftx_base, new_rightx_base
 
-    def window_shift(histogram, x_base):
+    def window_shift(self, histogram, x_base):
         """
-        This function aims to determine if the windows can follow the line provided.
+        This function aims to determine if the windows can follow the line provided. 
+        It should be trending upwards. 
         """
         # Divide the image up into 9 "windows". We can change this if necessary. 
         N = 9

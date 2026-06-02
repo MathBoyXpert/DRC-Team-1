@@ -27,7 +27,7 @@ This list is prioritized based on the dependency chain required to get the droid
 ## Phase 4: Advanced Features & Rules Compliance
 - [ ] **Obstacle Avoidance:** Implement "virtual boundaries" for purple obstacles based on centroids.
 - [ ] **Rival Bot Detection:** Add safety logic to slow down when red objects are detected.
-- [ ] **Turning Challenge:** Implement arrow sign detection (Template Matching) for fork selection.
+- [ ] **Turning Challenge:** Implement arrow sign detection (CNN-based) for fork selection.
 - [ ] **Finish Line Logic:** Add Green color detection to trigger the `FINISHED` state.
 
 ## Phase 5: Testing & Tuning

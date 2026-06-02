@@ -4,19 +4,20 @@ import pickle
 import os
 import config
 from VisionInput import VisionInput
+import computerVisionPreProcessing
 
 class HSVFilterInterface(ABC):
 
 
 
     def __init__(self):
-        self.Retrieve_HSV_Filter() # initialises the hsv filter
         # this makes it so the masked hsv frame is displayed reguardless of config settings
         self.isFilterBeingEdited = False
         self.hsvMask = None
         self.c = None
         self.cx = None
         self.cy = None
+        self.Retrieve_HSV_Filter() # initialises the hsv filter
 
     @abstractmethod
     def debug_print_filters(self):
@@ -83,7 +84,8 @@ class HSVFilterInterface(ABC):
             # gets the current hsv values from the GUI sliders and then displays the Masked frame
             self.Update_HSV_Filter_From_GUI()
             # this automatically updates the masked frame and contours in accordance with the values in the GUI
-            self.Filter_Main_Process(VisionInput().Get_Frame()[0], VisionInput().Get_Frame()[1])
+            frame = VisionInput().Get_Frame()[0]
+            self.Filter_Main_Process(frame, computerVisionPreProcessing.preprocessing(frame))
 
             # this waits for an input "s" which will then save the new HSV filter in a file and then end the HSV editing process 
             if cv2.waitKey(1) & 0xFF == ord('s'):
@@ -134,6 +136,9 @@ class HSVFilterInterface(ABC):
     def Update_Masked_Frame(self, hsv_frame):
         # creates a mask for the HSV values
         self.hsvMask = cv2.inRange(hsv_frame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
+        # this applys morphological operations on the mask to clean up any stray holes and noise
+        self.hsvMask = computerVisionPreProcessing.morphologicalOperationsOnMask(hsvMask=self.hsvMask)
+
 
     # this calculates and finds a contour on the current masked frame and also bounding boxes
     def Find_Centroid(self):
@@ -143,13 +148,14 @@ class HSVFilterInterface(ABC):
 
         # if at least 1 contour was found
         if contours:
-            # this is calculates the for bounding box based on the contour if enabled in the config
-            if config.Display_Bounding_Box[self.Get_Filter_Name()]:
-                for contour in contours:
-                    self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
-            
             # get the largest contour 
             self.c = max(contours, key=cv2.contourArea)
+            
+             # this is calculates the for bounding box based on the contour if enabled in the config
+            if config.Display_Bounding_Box[self.Get_Filter_Name()]:
+                    self.x, self.y, self.w, self.h = cv2.boundingRect(self.c)
+            
+            
             # this calculates a bunch of stuff on the pixels of the contoured frame to allow for centroid calculations
             M = cv2.moments(self.c)
 

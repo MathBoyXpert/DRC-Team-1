@@ -6,14 +6,28 @@ VIDEO_INPUT = 0
 # this tells the program if everything should that is procesed (e.g contours etc) should be displayed tgt
 # this is editable at runtime by pressing 'D'
 DISPLAY_PROCCESSED_OUTPUT = True
-
 TARGET_FPS = 1/100
+
+### PRE-PROCESSING VARIABLES ##
+# this dictates the various intensities of the preproccessing, can be: (5,5) or (7,7)
+GAUSSIAN_BLUR_STRENGTH = (5,5)
+# this determines how big the gaps that a morphological operation will fill in, can be: (5,5) or (3,3)
+MORPHOLOGICAL_OPERATIONS_KERNEL_SIZE = (5, 5)
+# this dictates the size of a resized frame
+WIDTH = 640
+HEIGHT = 480
 
 # this is to indivcate the HSV space, to save on processing power utilise COLOR_BGR2HSV instead of COLOR_BGR2HSV_FULL
 HSV_SPACE = cv2.COLOR_BGR2HSV_FULL
 # if the hsv space is COLOR_BGR2HSV_FULL the value of the constant must be 255 | if COLOR_BGR2HSV -> value = 179
 HSV_MAX_VAL = 255
 
+# Name of the Arrow CNN
+ARROW_CNN_PATH = "ArrowCNN.keras"
+# this is the confidence threshold for the ai to determine an arrow direction
+CONFIDENCE_THRESHOLD = 0.8
+# this is the input shape of the AI
+INPUT_SHAPE = (64, 64, 1)
 
 
 ### NAMES OF OPEN CV WINDOWS ###
@@ -23,6 +37,7 @@ TRACK_COMPLETION_HSV = "Track Completion HSV Filter"
 YELLOW_TRACK_LINES_HSV = "Yellow Track Lines HSV Filter (Left)"
 BLUE_TRACK_LINES_HSV = "Blue Track Lines HSV Filter"
 RIVAL_BOT_HSV = "Rival Bot HSV Filter"
+ARROW_HSV = "Arrow HSV Filter"
 
 # Names for the HSV Filter Track Bars
 Trackbar_Names_Dict = {
@@ -30,7 +45,8 @@ Trackbar_Names_Dict = {
     TRACK_COMPLETION_HSV: "Track Bar Window (Track Completion)",
     YELLOW_TRACK_LINES_HSV: "Yellow Track Lines Track Bar Window (Left)",
     BLUE_TRACK_LINES_HSV: "Blue Track Lines Track Bar Window (Left)",
-    RIVAL_BOT_HSV: "Track Bar Window (Rival Bot)"
+    RIVAL_BOT_HSV: "Track Bar Window (Rival Bot)",
+    ARROW_HSV: "Track Bar Window (Arrow)"
 }
 
 # Names for the HSV Filter Masked Windows
@@ -39,7 +55,8 @@ Masked_Window_Names_Dict = {
     TRACK_COMPLETION_HSV: "Masked Track Completion Window",
     YELLOW_TRACK_LINES_HSV: "Masked Yellow Track Lines Window",
     BLUE_TRACK_LINES_HSV: "Masked Blue Track Lines Window",
-    RIVAL_BOT_HSV: "Masked Rival Bot Window"
+    RIVAL_BOT_HSV: "Masked Rival Bot Window",
+    ARROW_HSV: "Masked Arrow Window"
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -48,7 +65,8 @@ Hsv_Filter_File_Names_Dict = {
     TRACK_COMPLETION_HSV: "TrackCompletionHsvFilter.pkl",
     YELLOW_TRACK_LINES_HSV: "YellowTrackLinesHsvFilter.pkl",
     BLUE_TRACK_LINES_HSV: "BlueTrackLinesHsvFilter.pkl",
-    RIVAL_BOT_HSV: "RivalBotHsvFilter.pkl"
+    RIVAL_BOT_HSV: "RivalBotHsvFilter.pkl",
+    ARROW_HSV: "ArrowHsvFilter.pkl"
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -57,7 +75,8 @@ Display_The_Frame = {
     TRACK_COMPLETION_HSV: True,
     BLUE_TRACK_LINES_HSV: True,
     YELLOW_TRACK_LINES_HSV: True,
-    RIVAL_BOT_HSV: True
+    RIVAL_BOT_HSV: True,
+    ARROW_HSV: True
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -66,5 +85,6 @@ Display_Bounding_Box = {
     TRACK_COMPLETION_HSV: True,
     BLUE_TRACK_LINES_HSV: False,
     YELLOW_TRACK_LINES_HSV: False,
-    RIVAL_BOT_HSV: True
+    RIVAL_BOT_HSV: True,
+    ARROW_HSV: True
 }

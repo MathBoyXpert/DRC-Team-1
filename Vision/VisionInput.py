@@ -49,7 +49,6 @@ class VisionInput:
 
             # updates the frame
             self._curr_frame = frame;
-            self._curr_hsv_frame = cv2.cvtColor(frame, config.HSV_SPACE)
             self._frame_no += 1
 
         print("Ending Frame Ingestion....")
@@ -57,7 +56,7 @@ class VisionInput:
 
     # returns the most recently ingested frames
     def Get_Frame(self):
-        return self._curr_frame, self._curr_hsv_frame, self._frame_no
+        return self._curr_frame, self._frame_no
 
     # starts the vision ingestion thread
     def Start_Vision_IO(self): 

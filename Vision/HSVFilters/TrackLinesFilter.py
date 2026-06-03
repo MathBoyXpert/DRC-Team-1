@@ -4,6 +4,7 @@ import os
 
 class TrackLinesFilter:
     def find_lane_pixels(self, frame):
+        print(frame.shape[0], frame.shape[1])
 	    # 1) Take a histogram of the bottom half of the image
         histogram = np.sum(frame[frame.shape[0]//2:,:], axis=0)
 

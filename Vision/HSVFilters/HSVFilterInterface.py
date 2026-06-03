@@ -129,7 +129,7 @@ class HSVFilterInterface(ABC):
         # this calculates the new contour
         self.Find_Centroid()
 
-        self.trackLines.find_lane_pixels(hsvFrame)
+        self.trackLines.find_lane_pixels(self.hsvMask)
         # this displays the frame if allowed by the config
         self.Display_Masked_Frame(frame)
 

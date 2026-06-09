@@ -19,8 +19,8 @@ class TrackLinesFilter:
         y = frame.shape[1]
         # lx = []
         # ly = []
-        rx = []
-        ry = []
+        all_x = []
+        all_y = []
 
         msk = frame.copy()
 
@@ -46,8 +46,8 @@ class TrackLinesFilter:
                 if M["m00"] != 0:
                     cx = int(M["m10"]/M["m00"])
                     cy = int(M["m01"]/M["m00"])
-                    rx.append(x_base - 50 + cx)
-                    ry.append(y - 40 + cy)
+                    all_x.append(x_base - 50 + cx)
+                    all_y.append(y - 40 + cy)
                     x_base = x_base - 50 + cx
 
             # cv2.rectangle(msk, (leftx_base-50, y), (leftx_base + 50, y-40), (255,255,255), 2)
@@ -60,8 +60,8 @@ class TrackLinesFilter:
         # if len(lx) >= 3:
         #     left_fit = np.polyfit(ly, lx, 2)
         
-        if len(rx) >= 3:
-            fit = np.polyfit(ry, rx, 2)
+        if len(all_y) >= 3:
+            fit = np.polyfit(all_y, all_x, 2)
         
         self.detect_polynomial(msk, fit, frame.shape[0])
         

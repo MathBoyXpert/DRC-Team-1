@@ -37,7 +37,7 @@ class TrackLinesFilter:
             #         ly.append(y - 40 + cy)
             #         leftx_base = leftx_base - 50 + cx
             
-            # Right Threshold
+            # Fitting "windows" into the image
             x_left = max(0, x_base - WINDOW_WIDTH)
             x_right = min(frame.shape[1], x_base + WINDOW_WIDTH)
 
@@ -88,6 +88,9 @@ class TrackLinesFilter:
             pt2 = (int(x[i+1]), int(plot_y[i+1]))
             if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
                 cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
+
+    def calculate_angle_steering(self, fit, height, frame_width):
+        pass
     ## Ignore this function
     # def window_shift(self, histogram, x_base):
     #     """
@@ -123,15 +126,3 @@ class TrackLinesFilter:
     #             x_base = np.mean(lane_pixels_x)
 
     #     return x_base
-    
-    
-    
-            
-
-            
-
-
-
-
-
-  

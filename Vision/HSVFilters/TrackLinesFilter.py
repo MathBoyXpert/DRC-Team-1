@@ -6,6 +6,7 @@ class TrackLinesFilter:
 
     def find_lane_pixels(self, frame, window_name):
         MIN_PIXELS = 10
+        WINDOW_WIDTH = 45
 	    # 1) Take a histogram of the bottom half of the image
         histogram = np.sum(frame[frame.shape[0]//2:,:], axis=0)
 
@@ -16,11 +17,7 @@ class TrackLinesFilter:
         x_base = np.argmax(histogram[:])
 
 	    # 3) Step through windows to track the line upward
-        # new_leftx_base = self.window_shift(histogram, leftx_base)
-        # new_rightx_base = self.window_shift(histogram, rightx_base)
         y = frame.shape[1]
-        # lx = []
-        # ly = []
         all_x = []
         all_y = []
 
@@ -41,8 +38,8 @@ class TrackLinesFilter:
             #         leftx_base = leftx_base - 50 + cx
             
             # Right Threshold
-            x_left = max(0, x_base-30)
-            x_right = min(frame.shape[1], x_base+30)
+            x_left = max(0, x_base - WINDOW_WIDTH)
+            x_right = min(frame.shape[1], x_base + WINDOW_WIDTH)
 
             img = frame[y-40:y, x_left:x_right]
 
@@ -65,7 +62,7 @@ class TrackLinesFilter:
                 x_base = x_left + cx
 
             # cv2.rectangle(msk, (leftx_base-50, y), (leftx_base + 50, y-40), (255,255,255), 2)
-                cv2.rectangle(msk, (x_base + 30, y), (x_base + 30, y-40), (255,255,255), 2)
+                cv2.rectangle(msk, (x_base - WINDOW_WIDTH, y), (x_base + WINDOW_WIDTH, y-40), (255,255,255), 2)
 
             y-=40
         

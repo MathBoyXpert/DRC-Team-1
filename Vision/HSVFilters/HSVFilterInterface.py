@@ -5,7 +5,6 @@ import os
 import config
 from VisionInput import VisionInput
 import computerVisionPreProcessing
-from .TrackLinesFilter import TrackLinesFilter
 class HSVFilterInterface(ABC):
 
 
@@ -18,7 +17,6 @@ class HSVFilterInterface(ABC):
         self.cx = None
         self.cy = None
         self.Retrieve_HSV_Filter() # initialises the hsv filter
-        self.trackLines = TrackLinesFilter()
 
     @abstractmethod
     def debug_print_filters(self):
@@ -129,9 +127,10 @@ class HSVFilterInterface(ABC):
         # this finds the new masked frame
         self.Update_Masked_Frame(hsvFrame)
         # this calculates the new contour
-        self.Find_Centroid()
+        # if self.Get_Filter_Name() in (config.BLUE_TRACK_LINES_HSV, config.YELLOW_TRACK_LINES_HSV) :
+        #     self.trackLines.find_lane_pixels(self.hsvMask)
 
-        self.trackLines.find_lane_pixels(self.hsvMask)
+        self.Find_Centroid()
         # this displays the frame if allowed by the config
         return self.Display_Masked_Frame(frame)
 

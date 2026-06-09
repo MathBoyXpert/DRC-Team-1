@@ -2,6 +2,7 @@ import numpy as np
 import config
 import cv2
 from .HSVFilterInterface import HSVFilterInterface
+from .TrackLinesFilter import TrackLinesFilter
 from VisionInput import VisionInput
 
 class BlueTrackLinesHSVFilter(HSVFilterInterface):
@@ -18,6 +19,7 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
             self.hsvValueMap[hsvAttribute] = 0;
 
         super().__init__()
+        self.trackline = TrackLinesFilter()
 
     # This creates an array of the minimum HSV values for the blue mask
     def Get_Min_Vals_Arr(self):
@@ -26,6 +28,11 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
     # This creates an array of the maximum HSV values for the blue mask
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["blue_hMax"], self.hsvValueMap["blue_sMax"], self.hsvValueMap["blue_vMax"]])
+
+    def Filter_Main_Process(self, frame, hsvFrame):
+        result = super().Filter_Main_Process(frame, hsvFrame)
+        self.trackline.find_lane_pixels(self.hsvMask, "Right Sliding window (blue)")
+        return result
 
     # prints all current HSV values for debugging and displaying
     def debug_print_filters(self):
@@ -39,6 +46,8 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
         print(f"  Min: H={self.blue_hMin}, S={self.blue_sMin}, V={self.blue_vMin}")
         print(f"  Max: H={self.blue_hMax}, S={self.blue_sMax}, V={self.blue_vMax}")
         print("-" * 30)
+
+        self.trackLines.find_lane_pixels(self.hsvMask)
 
     def Get_Filter_Name(self):
         return config.BLUE_TRACK_LINES_HSV

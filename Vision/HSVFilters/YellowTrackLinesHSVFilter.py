@@ -2,6 +2,7 @@ import numpy as np
 import config
 import cv2
 from .HSVFilterInterface import HSVFilterInterface
+from .TrackLinesFilter import TrackLinesFilter
 from VisionInput import VisionInput
 
 class YellowTrackLinesHSVFilter(HSVFilterInterface):
@@ -18,6 +19,7 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
             self.hsvValueMap[hsvAttribute] = 0;
 
         super().__init__()
+        self.trackline = TrackLinesFilter()
 
     # This creates an array of the minimum HSV values for the yellow mask
     def Get_Min_Vals_Arr(self):
@@ -27,6 +29,11 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
     def Get_Max_Vals_Arr(self):
         return np.array([self.hsvValueMap["yellow_hMax"], self.hsvValueMap["yellow_sMax"], self.hsvValueMap["yellow_vMax"]])
 
+    def Filter_Main_Process(self, frame, hsvFrame):
+        result = super().Filter_Main_Process(frame, hsvFrame)
+        self.trackline.find_lane_pixels(self.hsvMask, "Left Sliding window (yellow)")
+        return result
+    
     # prints all current HSV values for debugging and displaying
     def debug_print_filters(self):
         """Prints all current HSV filter values in a readable format."""
@@ -39,6 +46,7 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
         print(f"  Min: H={self.yellow_hMin}, S={self.yellow_sMin}, V={self.yellow_vMin}")
         print(f"  Max: H={self.yellow_hMax}, S={self.yellow_sMax}, V={self.yellow_vMax}")
         print("-" * 30)
+
 
     def Get_Filter_Name(self):
         return config.YELLOW_TRACK_LINES_HSV

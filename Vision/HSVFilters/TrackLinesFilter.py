@@ -3,7 +3,7 @@ import cv2
 import os
 
 class TrackLinesFilter:
-    def find_lane_pixels(self, frame):
+    def find_lane_pixels(self, frame, window_name):
 	    # 1) Take a histogram of the bottom half of the image
         histogram = np.sum(frame[frame.shape[0]//2:,:], axis=0)
 
@@ -11,13 +11,14 @@ class TrackLinesFilter:
         midpoint = int(histogram.shape[0] / 2)
         leftx_base = np.argmax(histogram[:midpoint])
         rightx_base = np.argmax(histogram[midpoint:]) + midpoint
+        x_base = np.argmax(histogram[:])
 
 	    # 3) Step through windows to track the line upward
         # new_leftx_base = self.window_shift(histogram, leftx_base)
         # new_rightx_base = self.window_shift(histogram, rightx_base)
-        y = 472
-        lx = []
-        ly = []
+        y = frame.shape[1]
+        # lx = []
+        # ly = []
         rx = []
         ry = []
 
@@ -26,63 +27,63 @@ class TrackLinesFilter:
         while y > 0:
             ## Left Threshold
 
-            img = frame[y-40:y, leftx_base-50:leftx_base+50]
-            contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                M = cv2.moments(contour)
-                if M["m00"] != 0:
-                    cx = int(M["m10"]/M["m00"])
-                    cy = int(M["m01"]/M["m00"])
-                    lx.append(leftx_base - 50 + cx)
-                    ly.append(y - 40 + cy)
-                    leftx_base = leftx_base - 50 + cx
+            # img = frame[y-40:y, leftx_base-50:leftx_base+50]
+            # contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            # for contour in contours:
+            #     M = cv2.moments(contour)
+            #     if M["m00"] != 0:
+            #         cx = int(M["m10"]/M["m00"])
+            #         cy = int(M["m01"]/M["m00"])
+            #         lx.append(leftx_base - 50 + cx)
+            #         ly.append(y - 40 + cy)
+            #         leftx_base = leftx_base - 50 + cx
             
             # Right Threshold
-            img = frame[y-40:y, rightx_base-50:rightx_base+50]
+            img = frame[y-40:y, x_base-50:x_base+50]
             contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
                 M = cv2.moments(contour)
                 if M["m00"] != 0:
                     cx = int(M["m10"]/M["m00"])
                     cy = int(M["m01"]/M["m00"])
-                    rx.append(rightx_base - 50 + cx)
+                    rx.append(x_base - 50 + cx)
                     ry.append(y - 40 + cy)
-                    rightx_base = rightx_base - 50 + cx
+                    x_base = x_base - 50 + cx
 
-            cv2.rectangle(msk, (leftx_base-50, y), (leftx_base + 50, y-40), (255,255,255), 2)
-            cv2.rectangle(msk, (rightx_base-50, y), (rightx_base + 50, y-40), (255,255,255), 2)
+            # cv2.rectangle(msk, (leftx_base-50, y), (leftx_base + 50, y-40), (255,255,255), 2)
+            cv2.rectangle(msk, (x_base-50, y), (x_base + 50, y-40), (255,255,255), 2)
             y-=40
         
-        left_fit = None
-        right_fit = None
+        # left_fit = None
+        fit = None
 
-        if len(lx) >= 3:
-            left_fit = np.polyfit(ly, lx, 2)
+        # if len(lx) >= 3:
+        #     left_fit = np.polyfit(ly, lx, 2)
         
-        if len(ry) >= 3:
-            right_fit = np.polyfit(ry, rx, 2)
+        if len(rx) >= 3:
+            fit = np.polyfit(ry, rx, 2)
         
-        self.detect_polynomial(msk, left_fit, right_fit, frame.shape[0])
+        self.detect_polynomial(msk, fit, frame.shape[0])
         
 
-        cv2.imshow("Sliding Windows", msk)
+        cv2.imshow(f"{window_name}", msk)
 
-    def detect_polynomial(self, frame, left, right, height):
+    def detect_polynomial(self, frame, fit, height):
         plot_y = np.linspace(0, height - 1, height)
 
-        if left is not None:
-            left_x = np.polyval(left, plot_y)
-            for i in range(len(plot_y) - 1):
-                pt1 = (int(left_x[i]), int(plot_y[i]))
-                pt2 = (int(left_x[i+1]), int(plot_y[i+1]))
-                if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
-                    cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
+        # if left is not None:
+        #     left_x = np.polyval(left, plot_y)
+        #     for i in range(len(plot_y) - 1):
+        #         pt1 = (int(left_x[i]), int(plot_y[i]))
+        #         pt2 = (int(left_x[i+1]), int(plot_y[i+1]))
+        #         if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
+        #             cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
 
-        if right is not None:
-            right_x = np.polyval(right, plot_y)
+        if fit is not None:
+            x = np.polyval(fit, plot_y)
             for i in range(len(plot_y) - 1):
-                pt1 = (int(right_x[i]), int(plot_y[i]))
-                pt2 = (int(right_x[i+1]), int(plot_y[i+1]))
+                pt1 = (int(x[i]), int(plot_y[i]))
+                pt2 = (int(x[i+1]), int(plot_y[i+1]))
                 if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
                     cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
     ## Ignore this function

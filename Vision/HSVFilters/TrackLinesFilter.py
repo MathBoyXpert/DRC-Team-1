@@ -41,8 +41,8 @@ class TrackLinesFilter:
             #         leftx_base = leftx_base - 50 + cx
             
             # Right Threshold
-            x_left = max(0, x_base-50)
-            x_right = min(frame.shape[1], x_base+50)
+            x_left = max(0, x_base-30)
+            x_right = min(frame.shape[1], x_base+30)
 
             img = frame[y-40:y, x_left:x_right]
 
@@ -65,7 +65,7 @@ class TrackLinesFilter:
                 x_base = x_left + cx
 
             # cv2.rectangle(msk, (leftx_base-50, y), (leftx_base + 50, y-40), (255,255,255), 2)
-                cv2.rectangle(msk, (x_base-50, y), (x_base + 50, y-40), (255,255,255), 2)
+                cv2.rectangle(msk, (x_base + 30, y), (x_base + 30, y-40), (255,255,255), 2)
 
             y-=40
         
@@ -77,8 +77,7 @@ class TrackLinesFilter:
         
         if len(all_x) >= 3:
             fit = np.polyfit(all_y, all_x, 2)
-        
-        self.detect_polynomial(msk, fit, frame.shape[0])
+            self.detect_polynomial(msk, fit, frame.shape[0])
         
 
         cv2.imshow(f"{window_name}", msk)
@@ -86,21 +85,12 @@ class TrackLinesFilter:
     def detect_polynomial(self, frame, fit, height):
         plot_y = np.linspace(0, height - 1, height)
 
-        # if left is not None:
-        #     left_x = np.polyval(left, plot_y)
-        #     for i in range(len(plot_y) - 1):
-        #         pt1 = (int(left_x[i]), int(plot_y[i]))
-        #         pt2 = (int(left_x[i+1]), int(plot_y[i+1]))
-        #         if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
-        #             cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
-
-        if fit is not None:
-            x = np.polyval(fit, plot_y)
-            for i in range(len(plot_y) - 1):
-                pt1 = (int(x[i]), int(plot_y[i]))
-                pt2 = (int(x[i+1]), int(plot_y[i+1]))
-                if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
-                    cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
+        x = np.polyval(fit, plot_y)
+        for i in range(len(plot_y) - 1):
+            pt1 = (int(x[i]), int(plot_y[i]))
+            pt2 = (int(x[i+1]), int(plot_y[i+1]))
+            if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
+                cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
     ## Ignore this function
     # def window_shift(self, histogram, x_base):
     #     """

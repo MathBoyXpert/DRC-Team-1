@@ -3,7 +3,9 @@ import cv2
 import os
 
 class TrackLinesFilter:
+
     def find_lane_pixels(self, frame, window_name):
+        MIN_PIXELS = 10
 	    # 1) Take a histogram of the bottom half of the image
         histogram = np.sum(frame[frame.shape[0]//2:,:], axis=0)
 
@@ -39,19 +41,32 @@ class TrackLinesFilter:
             #         leftx_base = leftx_base - 50 + cx
             
             # Right Threshold
-            img = frame[y-40:y, x_base-50:x_base+50]
-            contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                M = cv2.moments(contour)
-                if M["m00"] != 0:
-                    cx = int(M["m10"]/M["m00"])
-                    cy = int(M["m01"]/M["m00"])
-                    all_x.append(x_base - 50 + cx)
-                    all_y.append(y - 40 + cy)
-                    x_base = x_base - 50 + cx
+            x_left = max(0, x_base-50)
+            x_right = min(frame.shape[1], x_base+50)
+
+            img = frame[y-40:y, x_left:x_right]
+
+            if cv2.countNonZero(img) >= MIN_PIXELS:
+                # contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                nonzero_y, nonzero_x = np.nonzero(img)
+                # for contour in contours:
+                #     M = cv2.moments(contour)
+                #     if M["m00"] != 0:
+                #         cx = int(M["m10"]/M["m00"])
+                #         cy = int(M["m01"]/M["m00"])
+                #         all_x.append(x_left + cx)
+                #         all_y.append(y - 40 + cy)
+                #         x_base = x_left + cx
+
+                all_x.extend(nonzero_x + x_left)
+                all_y.extend(nonzero_y + (y - 40))
+
+                cx = int(np.mean(nonzero_x))
+                x_base = x_left + cx
 
             # cv2.rectangle(msk, (leftx_base-50, y), (leftx_base + 50, y-40), (255,255,255), 2)
-            cv2.rectangle(msk, (x_base-50, y), (x_base + 50, y-40), (255,255,255), 2)
+                cv2.rectangle(msk, (x_base-50, y), (x_base + 50, y-40), (255,255,255), 2)
+
             y-=40
         
         # left_fit = None
@@ -60,7 +75,7 @@ class TrackLinesFilter:
         # if len(lx) >= 3:
         #     left_fit = np.polyfit(ly, lx, 2)
         
-        if len(all_y) >= 3:
+        if len(all_x) >= 3:
             fit = np.polyfit(all_y, all_x, 2)
         
         self.detect_polynomial(msk, fit, frame.shape[0])

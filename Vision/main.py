@@ -1,3 +1,5 @@
+import os
+os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 from computerVisionPreProcessing import vision
 from VisionInput import VisionInput
 import time

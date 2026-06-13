@@ -125,9 +125,9 @@ class HSVFilterInterface(ABC):
         # this finds the new masked frame
         self.Update_Masked_Frame(hsvFrame)
         # this calculates the new contour
-        self.Find_Centroid()
+        contour_status = self.Find_Centroid()
         # this displays the frame if allowed by the config
-        return self.Display_Masked_Frame(frame)
+        return self.Display_Masked_Frame(frame, contour_status), contour_status
 
     # updates the current masked frame
     def Update_Masked_Frame(self, hsv_frame):
@@ -143,45 +143,51 @@ class HSVFilterInterface(ABC):
         # cv2.RETR_EXTERNAL tells OpenCV to only look for and return the absolute outermost shapes
         contours, _ = cv2.findContours(self.hsvMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # if at least 1 contour was found
-        if contours:
-            # get the largest contour 
-            self.c = max(contours, key=cv2.contourArea)
-            
-             # this is calculates the for bounding box based on the contour if enabled in the config
-            if config.Display_Bounding_Box[self.Get_Filter_Name()]:
-                    self.x, self.y, self.w, self.h = cv2.boundingRect(self.c)
-            
-            
-            # this calculates a bunch of stuff on the pixels of the contoured frame to allow for centroid calculations
-            M = cv2.moments(self.c)
-
-            # M["m00"] != 0 checks that there is at least 1 masked pixel
-            if M["m00"] != 0:
-                # this calculates the center of the masked pixels
-                # sum of x coordinates for masked pixels over the the total number of masked pixels
-                self.cx = int(M['m10'] / M['m00'])
-                # sum of x coordinates for masked pixels over the the total number of masked pixels                
-                self.cy = int(M['m01'] / M['m00'])
-            # this ensures that if a centroid can not be calculated then there is no old contour that is still saved
-            else:
-                self.c = None
-                self.cx = None
-                self.cy = None
-        else:
+        # if a contour wasnt detected
+        if not contours:
             self.c = None
             self.cx = None
             self.cy = None
+            return False
+
+        # if at least 1 contour was found
+        # get the largest contour
+        self.c = max(contours, key=cv2.contourArea)
+        
+        # if the minimum contour size is not met
+        if cv2.contourArea(self.c) < config.Minimum_Contour_Size[self.Get_Filter_Name()]:
+            self.c = None
+            self.cx = None
+            self.cy = None
+            return False
+        
+        # this is calculates the for bounding box based on the contour if enabled in the config
+        if config.Display_Bounding_Box[self.Get_Filter_Name()]:
+                self.x, self.y, self.w, self.h = cv2.boundingRect(self.c)
+        
+        # this calculates a bunch of stuff on the pixels of the contoured frame to allow for centroid calculations
+        M = cv2.moments(self.c)
+
+        # M["m00"] != 0 checks that there is at least 1 masked pixel
+        if M["m00"] != 0:
+            # this calculates the center of the masked pixels
+            # sum of x coordinates for masked pixels over the the total number of masked pixels
+            self.cx = int(M['m10'] / M['m00'])
+            # sum of x coordinates for masked pixels over the the total number of masked pixels                
+            self.cy = int(M['m01'] / M['m00'])
+            
+        # a contour of sufficient size was found and a centroid was calculated
+        return True
 
     # displays the current masked frame
-    def Display_Masked_Frame(self, frame): 
+    def Display_Masked_Frame(self, frame, contour_status): 
         # display the HSV masked frame if the current config allows
         if self.Should_Filtered_Frame_Be_Displayed() or self.isFilterBeingEdited or config.DISPLAY_PROCCESSED_OUTPUT:
             # this applys the mask on the current frame
             maskedframe = cv2.bitwise_and(frame, frame, mask=self.hsvMask)
 
             # Draw target centroid and the contour outline together if a contour exists
-            if self.c is not None:
+            if contour_status:
                 # this draws the contours, the centre of the contoured area and bounding boxes
                 cv2.circle(maskedframe, (self.cx, self.cy), 5, (255, 255, 255), -1)
                 cv2.drawContours(maskedframe, [self.c], -1, (0, 255, 0), 1)

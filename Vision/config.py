@@ -29,6 +29,10 @@ CONFIDENCE_THRESHOLD = 0.8
 # this is the input shape of the AI
 INPUT_SHAPE = (64, 64, 1)
 
+BASE_ARROWS_DIR = "Vision/ArrowData/BaseArrows"
+CAPTURED_IMAGES_DIR = "Vision/ArrowData/CapturedImages"
+TRAINING_DATA_IMAGES_DIR = "Vision/ArrowData/TrainingData"
+
 
 ### NAMES OF OPEN CV WINDOWS ###
 # Filter Names

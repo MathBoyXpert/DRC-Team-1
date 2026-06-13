@@ -4,12 +4,9 @@ import pickle
 import os
 import config
 from VisionInput import VisionInput
-import computerVisionPreProcessing
+import preProccessingUtils
 
 class HSVFilterInterface(ABC):
-
-
-
     def __init__(self):
         # this makes it so the masked hsv frame is displayed reguardless of config settings
         self.isFilterBeingEdited = False
@@ -85,7 +82,7 @@ class HSVFilterInterface(ABC):
             self.Update_HSV_Filter_From_GUI()
             # this automatically updates the masked frame and contours in accordance with the values in the GUI
             frame = VisionInput().Get_Frame()[0]
-            self.Filter_Main_Process(frame, computerVisionPreProcessing.preprocessing(frame))
+            self.Filter_Main_Process(frame, preProccessingUtils.preprocessing(frame))
 
             # this waits for an input "s" which will then save the new HSV filter in a file and then end the HSV editing process 
             if cv2.waitKey(1) & 0xFF == ord('s'):
@@ -137,7 +134,7 @@ class HSVFilterInterface(ABC):
         # creates a mask for the HSV values
         self.hsvMask = cv2.inRange(hsv_frame, self.Get_Min_Vals_Arr(), self.Get_Max_Vals_Arr())
         # this applys morphological operations on the mask to clean up any stray holes and noise
-        self.hsvMask = computerVisionPreProcessing.morphologicalOperationsOnMask(hsvMask=self.hsvMask)
+        self.hsvMask = preProccessingUtils.morphologicalOperationsOnMask(hsvMask=self.hsvMask)
 
 
     # this calculates and finds a contour on the current masked frame and also bounding boxes

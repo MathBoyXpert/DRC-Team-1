@@ -14,6 +14,8 @@ import numpy as np
 import tensorflow as tf
 import keras
 import os
+import preProccessingUtils
+import time
 
 class vision:
     def __init__(self):
@@ -39,6 +41,27 @@ class vision:
 
         # tracks the last edited frame to ensure calculations arent performed on the same frame
         self.lastProcessedFrame = -1
+    
+    # captures the current arrow mask and saves it for training data.
+    def capture_arrow(self, label):
+        arrow_filter = self.HSVManager[config.ARROW_HSV]
+        if arrow_filter.c is not None:
+            # Get the ROI from the hsvMask
+            x, y, w, h = arrow_filter.x, arrow_filter.y, arrow_filter.w, arrow_filter.h
+            roi = arrow_filter.hsvMask[y:y+h, x:x+w]
+            
+            # Create directory if it doesn't exist
+            save_dir = os.path.join(config.CAPTURED_IMAGES_DIR, label)
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir, exist_ok=True)
+            
+            # Save with timestamp to avoid name collisions
+            timestamp = int(time.time() * 1000)
+            file_path = os.path.join(save_dir, f"capture_{timestamp}.png")
+            cv2.imwrite(file_path, roi)
+            print(f"Captured {label} arrow to {file_path}")
+        else:
+            print("No arrow detected in mask to capture!")
 
     def mainLoop(self):
         # captures the video input frame by frame
@@ -52,7 +75,7 @@ class vision:
                 framesToCombine = [] # this stores the frames output by various hsv filters, to combine into one processed output 
                 
                 # this is the hsv frame after it has been pre-processed
-                hsvFrame = preprocessing(frame)
+                hsvFrame = preProccessingUtils.preprocessing(frame)
                 # this resizes and compresses teh frame
                 frame = cv2.resize(frame, (config.WIDTH, config.HEIGHT), interpolation=cv2.INTER_AREA)
                 
@@ -69,10 +92,10 @@ class vision:
                     if filter_name == config.ARROW_HSV and self.modelLoaded:
                         # predicts the direction of the arrow
                         direction, conf = self.arrowCNN.predict(filters.hsvMask)
-                        # if the CNN is confident then detect the arrow
-                        if conf > config.CONFIDENCE_THRESHOLD: # Confidence threshold
-                            cv2.putText(frame, f"Arrow: {direction} ({conf:.2f})", (10, 30), 
-                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        # if the CNN is confident and it's not 'None', then detect the arrow
+                        # if direction != "None" and conf > config.CONFIDENCE_THRESHOLD: # Confidence threshold
+                        cv2.putText(frame, f"Arrow: {direction} ({conf:.2f})", (10, 30), 
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 
                 if config.DISPLAY_PROCCESSED_OUTPUT and framesToCombine:
                     combinedFrame = cv2.vconcat(framesToCombine)
@@ -110,40 +133,13 @@ class vision:
             if key == ord('t'):
                 config.DISPLAY_PROCCESSED_OUTPUT = not config.DISPLAY_PROCCESSED_OUTPUT
 
+            # Capture keybinds
+            if key == ord('1'):
+                self.capture_arrow("Left")
+            elif key == ord('2'):
+                self.capture_arrow("Right")
+            elif key == ord('3'):
+                self.capture_arrow("None")
 
         # frees anything stored in memory
         cv2.destroyAllWindows()
-
-def morphologicalOperationsOnMask(hsvMask):
-    # bigger kernels remove/fill larger artifacts but distort shapes more
-    kernel = np.ones((5, 5), np.uint8)
-    # OPENING to remove background noise (stray pixels that have been masked in)
-    cleaned_open = cv2.morphologyEx(hsvMask, cv2.MORPH_OPEN, kernel)
-    # CLOSING to fill internal holes (glare/shadow patches, that didn get masked in)
-    return cv2.morphologyEx(cleaned_open, cv2.MORPH_CLOSE, kernel)
-
-# this is globally accessible 
-# Preproccessing the frame before it is sent to be filtered, this returns a HSV Frame
-def preprocessing(frame):
-    
-    # resize the frame to whatever is in config for faster processing
-    resized_frame = cv2.resize(frame, (config.WIDTH, config.HEIGHT), interpolation=cv2.INTER_AREA)
-    
-    # applys a gaussian blur to smooth out the frame 
-    blurred_frame = cv2.GaussianBlur(resized_frame, (5, 5), 0)
-    
-    # applying CLAHE (Contrast Limited Adaptive Histogram Equalization)
-    # Convert to Lab color space to apply CLAHE on the Lightness channel
-    lab = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2Lab)
-    l, a, b = cv2.split(lab)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    cl = clahe.apply(l)
-
-    # Merge back and convert to BGR
-    limg = cv2.merge((cl, a, b))
-    enhanced_frame = cv2.cvtColor(limg, cv2.COLOR_Lab2BGR)
-    
-    # finally convertign to HSV for filtering
-    curr_hsv_frame = cv2.cvtColor(enhanced_frame, config.HSV_SPACE)
-    
-    return curr_hsv_frame

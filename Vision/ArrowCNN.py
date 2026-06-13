@@ -65,7 +65,8 @@ class ArrowCNN:
         :return: String (Direction Name), confidence score.
         """
         processed = self.preprocess_image(mask)
-        predictions = self.model.predict(processed, verbose=0)
+        # Using the model directly is faster than model.predict for single images
+        predictions = self.model(processed, training=False).numpy()
         class_idx = np.argmax(predictions[0])
         confidence = predictions[0][class_idx]
         

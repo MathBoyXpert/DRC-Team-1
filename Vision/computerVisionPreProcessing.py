@@ -47,6 +47,11 @@ class vision:
 
         # tracks the last edited frame to ensure calculations arent performed on the same frame
         self.lastProcessedFrame = -1
+
+        # Variables for CNN optimization
+        self.inference_counter = 0
+        self.last_direction = "None"
+        self.last_conf = 0.0
     
     # captures the current arrow mask and saves it for training data.
     def capture_arrow(self, label):
@@ -105,12 +110,21 @@ class vision:
                     
         # run CNN prediction
         if self.modelLoaded and config.ARROW_DETECTION_METHOD == config.CNN_METHOD:
-            # predicts the direction of the arrow
-            direction, conf = self.arrowCNN.predict(detected_arrow)
-            # if the CNN is confident and it's not 'None', then detect the arrow
-            # if direction != "None" and conf > config.CONFIDENCE_THRESHOLD: # Confidence threshold
-            cv2.putText(frame, f"Arrow: {direction} ({conf:.2f})", (10, 30), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            # OPTIMIZATION: Only call CNN if a contour is detected
+            if contour_status:
+                # OPTIMIZATION: Throttle inference to every 3rd frame
+                if self.inference_counter % 3 == 0:
+                    # predicts the direction of the arrow
+                    self.last_direction, self.last_conf = self.arrowCNN.predict(detected_arrow)
+                
+                # if the CNN is confident and it's not 'None', then detect the arrow
+                # if direction != "None" and conf > config.CONFIDENCE_THRESHOLD: # Confidence threshold
+                cv2.putText(frame, f"Arrow: {self.last_direction} ({self.last_conf:.2f})", (10, 30), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            else:
+                # Reset when no contour is detected
+                self.last_direction = "None"
+                self.last_conf = 0.0
         
         # returning the frame with the text for arrow detection added
         return frame
@@ -124,12 +138,11 @@ class vision:
             if self.lastProcessedFrame != currFrameNo:
                 # updates the last processed frame to the frame now being processed
                 self.lastProcessedFrame = currFrameNo
+                self.inference_counter += 1 # Increment for CNN throttling
                 frames_to_combine = [] # this stores the frames output by various hsv filters, to combine into one processed output 
                 
                 # this is the hsv frame after it has been pre-processed
-                hsvFrame = preProccessingUtils.preprocessing(frame)
-                # this resizes and compresses teh frame
-                frame = cv2.resize(frame, (config.WIDTH, config.HEIGHT), interpolation=cv2.INTER_AREA)
+                frame, hsvFrame = preProccessingUtils.preprocessing(frame)
                 
                 for filter_name, filters in self.HSVManager.items():
                     # The update masked frame function will also display the masked frame of individual filters if needed, this is editable in the config

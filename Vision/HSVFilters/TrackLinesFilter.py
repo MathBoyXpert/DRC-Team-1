@@ -3,7 +3,6 @@ import cv2
 import os
 
 class TrackLinesFilter:
-
     def find_lane_pixels(self, frame, window_name):
         MIN_PIXELS = 10
         WINDOW_WIDTH = 45
@@ -17,7 +16,7 @@ class TrackLinesFilter:
         x_base = np.argmax(histogram[:])
 
 	    # 3) Step through windows to track the line upward
-        y = frame.shape[1]
+        y = frame.shape[0]
         all_x = []
         all_y = []
 
@@ -76,8 +75,8 @@ class TrackLinesFilter:
             fit = np.polyfit(all_y, all_x, 2)
             self.detect_polynomial(msk, fit, frame.shape[0])
         
-
-        cv2.imshow(f"{window_name}", msk)
+        cv2.imshow(window_name, msk)
+        return msk
 
     def detect_polynomial(self, frame, fit, height):
         plot_y = np.linspace(0, height - 1, height)

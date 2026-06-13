@@ -31,7 +31,17 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
 
     def Filter_Main_Process(self, frame, hsvFrame):
         result = super().Filter_Main_Process(frame, hsvFrame)
-        self.trackline.find_lane_pixels(self.hsvMask, "Left Sliding window (yellow)")
+        bounded_mask_y = np.zeros_like(self.hsvMask)
+
+        if self.hsvMask is not None and self.c is not None:
+            x, y, h, w = cv2.boundingRect(self.c)
+            bounded_mask_y = np.zeros_like(self.hsvMask)
+
+            bounded_mask_y[y:y+h, x:x+w] = self.hsvMask[y:y+h, x:x+w]
+    
+        msk = self.trackline.find_lane_pixels(bounded_mask_y, "Left Sliding window (yellow)")
+
+            # cv2.imshow("Left Sliding Window (Yellow)", msk)
         return result
     
     # prints all current HSV values for debugging and displaying

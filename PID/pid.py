@@ -38,11 +38,8 @@ class PID:
         self.prev_error = error
 
         return output
-    
 
-    ### CONVERSIONS FOR ALL THE RANDOM SHI ###
 
-    
 
 
     

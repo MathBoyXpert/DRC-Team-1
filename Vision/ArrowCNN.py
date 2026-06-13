@@ -1,3 +1,6 @@
+import math
+import random
+
 import tensorflow as tf
 from keras import layers, models
 from keras.callbacks import EarlyStopping
@@ -8,19 +11,18 @@ import cv2
 import config
 import os
 
-EPOCHS = 30
+EPOCHS = 5
 
 class ArrowCNN:
     def __init__(self):
         # this is the name of the classes the NN predicts
-        self.class_names = ['Left', 'Right']
+        self.class_names = ['Left', 'Right', 'None']
         # number of outputs the NN can predict 
         self.num_classes = len(self.class_names)
         # saves a model with randomised weights
         self.model = self._build_model()
 
     def _build_model(self):
-        """Defines the CNN architecture with accuracy and error rate metrics."""
         # this is the structure of the NN recomended by Gemini 
         model = models.Sequential([
             layers.Input(shape=config.INPUT_SHAPE),
@@ -63,7 +65,8 @@ class ArrowCNN:
         :return: String (Direction Name), confidence score.
         """
         processed = self.preprocess_image(mask)
-        predictions = self.model.predict(processed, verbose=0)
+        # Using the model directly is faster than model.predict for single images
+        predictions = self.model(processed, training=False).numpy()
         class_idx = np.argmax(predictions[0])
         confidence = predictions[0][class_idx]
         
@@ -81,52 +84,116 @@ class ArrowCNN:
         """
         self.model = tf.keras.models.load_model(config.ARROW_CNN_PATH)
 
-def train_model(data_dir):
-    # this is the classes of the output layer
-    class_names = ['Left', 'Right']
-    images = []
-    indexes = []
-
-    # this loads the data for testing
-    print(f"Loading training data from {data_dir}...")
-    for index, name in enumerate(class_names):
-        folder = os.path.join(data_dir, name)
-
-        # this checks if the training data folder exists
-        if not os.path.exists(folder):
-            print(f"Warning: Folder {folder} not found. Skipping.")
+def load_images_from_folders(folder_paths, label):
+    """
+    Helper function to read all .png images from a list of folders
+    and attach their class label.
+    """
+    images_and_labels = []
+    
+    for folder_path in folder_paths:
+        # checks if the folder is a directory 
+        if not os.path.isdir(folder_path):
             continue
+            
+        # Look at every file inside subfolders like 'Left_1'
+        for filename in os.listdir(folder_path):
+            if filename.endswith('.png'):
+                img_path = os.path.join(folder_path, filename)
+                # read the image as grayscale (as the CNN will be analysing a masked frame taht is gray scale)
+                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                
+                if img is not None:
+                    # Append a tuple containing the image array and its label
+                    images_and_labels.append((img, label))
+                    
+    return images_and_labels
+
+def create_dataset_with_images():
+    # Master arrays to hold the (image, label) tuples
+    train = []
+    val = []
+    test = []
+    
+    if not os.path.exists(config.TRAINING_DATA_IMAGES_DIR):
+        print(f"Error: Base directory '{config.TRAINING_DATA_IMAGES_DIR}' not found.")
+        return train, val, test
         
-        # loads the data for training
-        for filename in os.listdir(folder):
-            # processing the individual image into a cv2 format
-            img_path = os.path.join(folder, filename)
-            img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-            # checks that the image is indeed an image
-            if img is not None:
-                # Resize to match CNN input
-                img = cv2.resize(img, (config.INPUT_SHAPE[1], config.INPUT_SHAPE[0]))
-                images.append(img)
-                indexes.append(index)
+    classes = ['Left', 'Right', 'None']
+    
+    for cls in classes:
+        class_dir = os.path.join(config.TRAINING_DATA_IMAGES_DIR, cls)
+        
+        subfolders = [f for f in os.listdir(class_dir) if os.path.isdir(os.path.join(class_dir, f))]
+        random.shuffle(subfolders)
+        
+        total_folders = len(subfolders)
+        if total_folders == 0:
+            print(f"Warning: No subfolders found in {class_dir}")
+            continue
+            
+        # Calculate indices for the 80/10/10 split
+        train_end = math.floor(0.8 * total_folders)
+        val_end = math.floor(0.9 * total_folders)
+        
+        # Construct full folder paths for the splits
+        cls_train_folders = [os.path.join(class_dir, f) for f in subfolders[:train_end]]
+        cls_val_folders = [os.path.join(class_dir, f) for f in subfolders[train_end:val_end]]
+        cls_test_folders = [os.path.join(class_dir, f) for f in subfolders[val_end:]]
+        
+        print(f"Loading '{cls}' -> Train: {len(cls_train_folders)} folders, Val: {len(cls_val_folders)} folders, Test: {len(cls_test_folders)} folders")
 
-    # checks how many images were loaded
-    if not images:
-        print("Error: No images found for training.")
-        return
-    else:
-        print(f"The number of images loaded for training is: {len(images)}")
+        # Load the actual images from those split folders into the master arrays
+        train.extend(load_images_from_folders(cls_train_folders, cls))
+        val.extend(load_images_from_folders(cls_val_folders, cls))
+        test.extend(load_images_from_folders(cls_test_folders, cls))
+        
+        # debugging prints
+        print(f"\n--- {cls} Image Loading Summary ---")
+        print(f"Total Train Images Loaded: {len(train)}")
+        print(f"Total Val Images Loaded: {len(val)}")
+        print(f"Total Test Images Loaded: {len(test)}")
+    return train, val, test
 
+def prep_data(data):
+    # randomly shuffling the data
+    data_to_prep = data
+    random.shuffle(data_to_prep)
+    
+    classes_as_strings = [item[1] for item in data_to_prep]
+    # a dictionary that acts as our translation guide
+    class_map = {
+        'Left': 0, 
+        'Right': 1, 
+        'None': 2
+    }
+    # translate every string into an integer
+    integer_labels = [class_map[label] for label in classes_as_strings]
+    # Convert the integer list into a numpy array for tensorflow
+    cls = np.array(integer_labels)
+    
+    images = [item[0] for item in data_to_prep]
     # converts the integers used to represent pixel values to floating point numbers so that tensor flow can process it 
     images = np.array(images).astype('float32')
     # normalising the pixel values form 0-255 to 0-1.0
     images = images / 255.0
     # as the initial images for the arrow is grayscale png it does not contain a dimention for colour channels 
     images = np.expand_dims(images, axis=-1) # This adds the channel dimension
-    indexes = np.array(indexes)
+    # randomly shuffles the array
+    
+    return images, cls
 
-    # split into train and test sets (80% train, 20% test)
-    X_train, X_test, y_train, y_test = train_test_split(images, indexes, test_size=0.2, random_state=42)
-
+def train_model(data_dir):
+    # this is the classes of the output layer
+    class_names = ['Left', 'Right', 'None']
+    # loading the training data
+    train, val, test = create_dataset_with_images()
+    
+    # preparing the training data
+    training_images, training_classes = prep_data(train)
+    val_images, val_classes = prep_data(val)
+    test_images, test_classes = prep_data(test)
+    
     # initialising a new model to train
     cnn = ArrowCNN()
     
@@ -136,11 +203,10 @@ def train_model(data_dir):
     print(f"Starting training for {EPOCHS} epochs...")
     # Further split X_train into training and validation during fit (20% of training data for validation)
     # this also trains the program
-    history = cnn.model.fit(X_train,
-                y_train,
+    history = cnn.model.fit(training_images,
+                training_classes,
                 epochs=EPOCHS,
-                validation_split=0.2,
-                batch_size=32, # number of samples processed before the weights are updated
+                validation_data=(val_images, val_classes), # this is the validation data for the model
                 callbacks=[es], # setting early stopping conditions
                 verbose=1 # shows a progress bar.
                 )
@@ -167,7 +233,7 @@ def train_model(data_dir):
     
     # evaluate on the unseen test set
     print("\nEvaluating on Test Set (Unseen Data)...")
-    results = cnn.model.evaluate(X_test, y_test, verbose=1)
+    results = cnn.model.evaluate(test_images, test_classes, verbose=1)
     
     # Keras returns [loss, accuracy, error_rate] based on compilation
     test_loss, test_acc = results
@@ -180,7 +246,7 @@ def train_model(data_dir):
 
 if __name__ == "__main__":
     # If TrainingData exists, run training. Otherwise, just print summary.
-    data_path = "Vision/TrainingData"
+    data_path = config.TRAINING_DATA_IMAGES_DIR
     if os.path.exists(data_path) and any(os.scandir(data_path)):
         train_model(data_path)
         print("Completed initial training of ArrowCNN")

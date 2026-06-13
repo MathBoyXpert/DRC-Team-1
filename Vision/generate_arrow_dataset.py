@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import random
+import config
 
 def augment_image(image):
     """
@@ -58,47 +59,93 @@ def augment_image(image):
 
     return image
 
-def generate_dataset(base_images_dir, output_dir, samples_per_class=1000):
-    """
-    Generates an augmented dataset from base images.
-    Even if the track arrow is black, the OpenCV mask makes it WHITE.
-    So we ALWAYS generate white-on-black for the CNN.
-    """
-    classes = ['Left', 'Right']
+def generate_none_image(h=64, w=64):
+    """Generates a random non-arrow image (noise, blank, or random shape)"""
+    bg_color = 0
+    image = np.full((h, w), bg_color, dtype=np.uint8)
     
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    choice = random.randint(0, 3)
+    if choice == 0:
+        # Return mostly blank image
+        pass
+    elif choice == 1:
+        # Add random noise
+        noise = np.random.normal(0, 50, (h, w)).astype(np.uint8)
+        image = cv2.add(image, noise)
+    elif choice == 2:
+        # Draw a random white line (simulating track lines)
+        pt1 = (random.randint(0, w), random.randint(0, h))
+        pt2 = (random.randint(0, w), random.randint(0, h))
+        thickness = random.randint(2, 10)
+        cv2.line(image, pt1, pt2, 255, thickness)
+    else:
+        # Draw a random white blob/circle (simulating obstacle/noise)
+        center = (random.randint(0, w), random.randint(0, h))
+        radius = random.randint(5, 20)
+        cv2.circle(image, center, radius, 255, -1)
+        
+    return augment_image(image)
+
+# Generates an augmented dataset from both base images and captured images.
+def generate_dataset( 
+    samples_per_class=1000
+):
+    classes = ['Left', 'Right', 'None']
+    
+    if not os.path.exists(config.TRAINING_DATA_IMAGES_DIR):
+        os.makedirs(config.TRAINING_DATA_IMAGES_DIR)
 
     for cls in classes:
         print(f"Generating data for class: {cls}")
-        base_path = os.path.join(base_images_dir, f"{cls}.png")
-        if not os.path.exists(base_path):
-            print(f"Warning: Base image {base_path} not found. Skipping {cls}.")
-            continue
-            
-        base_img = cv2.imread(base_path, cv2.IMREAD_GRAYSCALE)
+        class_output_dir = os.path.join(config.TRAINING_DATA_IMAGES_DIR, cls)
         
-        # AUTO-INVERSION LOGIC:
-        # We want White Arrow (255) on Black Background (0).
-        # If the image is mostly white (mean > 127), it's a black arrow on white.
-        # We invert it so the CNN sees what the HSV filter will produce.
-        if np.mean(base_img) > 127:
-            print(f"  Notice: Inverting {cls}.png (Black-on-White) to White-on-Black for Mask matching...")
-            base_img = cv2.bitwise_not(base_img)
-        else:
-            print(f"  Notice: {cls}.png is already White-on-Black.")
-            
-        base_img = cv2.resize(base_img, (64, 64))
-        
-        class_output_dir = os.path.join(output_dir, cls)
+        # this makes the output directory for the class if it doesnt already exist
         if not os.path.exists(class_output_dir):
             os.makedirs(class_output_dir)
             
-        for i in range(samples_per_class):
-            augmented = augment_image(base_img.copy())
-            cv2.imwrite(os.path.join(class_output_dir, f"{cls}_{i}.png"), augmented)
+        # For loading the captured imgaes into
+        source_images = []
+        
+        # Load Captured Images
+        captured_images = os.path.join(config.CAPTURED_IMAGES_DIR, cls)
+        if os.path.exists(captured_images):
+            # gets all the captured images file names
+            file_names = [f for f in os.listdir(captured_images) if f.endswith('.png')]
+            print(f"  Found {len(file_names)} captured images for {cls}")
+            # loads each image into the source image file
+            for filename in file_names:
+                img_path = os.path.join(captured_images, filename)
+                img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    source_images.append(img)
 
-    print(f"Dataset generation complete. Saved to {output_dir}")
+        if not source_images:
+            print(f"Warning: No source images found for {cls}. Skipping.")
+            continue
+            
+        # Augment all source images to reach samples_per_class roughly
+        num_sources = len(source_images)
+        samples_per_source = samples_per_class // num_sources
+        
+        print(f"  Augmenting {num_sources} source images ({samples_per_source} samples each)...")
+        num_sources = 0
+        count = 0
+        for src_img in source_images:
+            src_img = cv2.resize(src_img, (64, 64))
+            num_sources += 1
+            source_segment = os.path.join(class_output_dir, f"{cls}_{num_sources}")
+            # makes the directory for the segment if it doesnt exist
+            if not os.path.exists(source_segment):
+                os.makedirs(source_segment)
+            
+            print(f"Generating images for: {source_segment}")
+            for _ in range(samples_per_source):
+                count += 1
+                augmented = augment_image(src_img.copy())
+                # this makes it so that all images that are created based on one source are segmented based on that source 
+                cv2.imwrite(os.path.join(source_segment, f"{cls}_{count}.png"), augmented)
+    
+    print(f"Dataset generation complete. Saved to {config.TRAINING_DATA_IMAGES_DIR}")
 
 if __name__ == "__main__":
-    generate_dataset("Vision/BaseArrows", "Vision/TrainingData", samples_per_class=500)
+    generate_dataset(samples_per_class=2000)

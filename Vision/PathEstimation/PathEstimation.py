@@ -13,14 +13,17 @@ class PathEstimation:
 
     def calculate_curvature(self):
         y_eval = 480
+        ## This grabs the polynomial coefficients that were obtained from the fit
         left_fit = self.yellow_filter.fit
         right_fit = self.blue_filter.fit
         if left_fit is None or right_fit is None:
             return None
         
+        ## Calculates the theoretical curvature of the left and right curves
         left_curvature = ((1 + (2* left_fit[0]*y_eval+ left_fit[1])**2)**1.5) / np.abs(2*left_fit[0])
         right_curvature = ((1 + (2 *right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.abs(2*right_fit[0])
 
+        ## Returns the curve
         return (left_curvature + right_curvature) / 2
     
     def calculate_centreline(self):

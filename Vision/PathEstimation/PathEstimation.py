@@ -7,7 +7,8 @@ import numpy as np
 class PathEstimation:
     CAR_CENTRE = 320 ## This is frame size (640) / 2 = 320
 
-    def __init__(self, yellow_filter: YellowTrackLinesHSVFilter, blue_filter : BlueTrackLinesHSVFilter):
+    ## Takes in the yellow and blue filters when initialising the class
+    def __init__(self, yellow_filter: YellowTrackLinesHSVFilter, blue_filter: BlueTrackLinesHSVFilter):
         self.yellow_filter = yellow_filter
         self.blue_filter = blue_filter
 

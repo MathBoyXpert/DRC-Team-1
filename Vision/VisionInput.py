@@ -1,4 +1,4 @@
-import config
+import Utils.config as config
 import cv2
 import threading
 import time
@@ -21,7 +21,7 @@ class VisionInput:
         if cls._instance is None:
             cls._instance = super(VisionInput, cls).__new__(cls)
             # Initialize camera here to be a singleton
-            import config
+            import Utils.config as config
             import cv2
             print("Vision Object created - THIS SHOULD NEVER APPEAR TWICE IN DEBUGGING OUTPUTS")
             cls._video_capture = cv2.VideoCapture(config.VIDEO_INPUT)

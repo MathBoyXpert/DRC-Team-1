@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 import random
-import config
+import Utils.config as config
 
 def augment_image(image):
     """

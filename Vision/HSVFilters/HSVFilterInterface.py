@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 import cv2
 import pickle
 import os
-import config
+import Utils.config as config
 from VisionInput import VisionInput
-import preProccessingUtils
+import Utils.preProccessingUtils as preProccessingUtils
 
 class HSVFilterInterface(ABC):
     def __init__(self):
@@ -82,7 +82,9 @@ class HSVFilterInterface(ABC):
             self.Update_HSV_Filter_From_GUI()
             # this automatically updates the masked frame and contours in accordance with the values in the GUI
             frame = VisionInput().Get_Frame()[0]
-            self.Filter_Main_Process(frame, preProccessingUtils.preprocessing(frame))
+            # Unpack the resized BGR and HSV frames from preprocessing
+            resized, hsv = preProccessingUtils.preprocessing(frame)
+            self.Filter_Main_Process(resized, hsv)
 
             # this waits for an input "s" which will then save the new HSV filter in a file and then end the HSV editing process 
             if cv2.waitKey(1) & 0xFF == ord('s'):

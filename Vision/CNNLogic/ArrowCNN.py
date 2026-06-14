@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-import config
+import Utils.config as config
 import os
 
 EPOCHS = 5

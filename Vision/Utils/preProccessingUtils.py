@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import keras
 import cv2
-import config
+import Utils.config as config
 import os
 
 def morphologicalOperationsOnMask(hsvMask):

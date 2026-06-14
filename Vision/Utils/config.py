@@ -12,6 +12,8 @@ ARROW_DETECTION_METHOD = CNN_METHOD
 # this is editable at runtime by pressing 'D'
 DISPLAY_PROCCESSED_OUTPUT = True
 TARGET_FPS = 1/100
+# run the cnn every nth frame based on the CNN_INFERENCE variable value
+CNN_INFERENCE = 3
 
 ### PRE-PROCESSING VARIABLES ##
 # this dictates the various intensities of the preproccessing, can be: (5,5) or (7,7)
@@ -76,12 +78,12 @@ Masked_Window_Names_Dict = {
 
 # Names for the HSV Filter Files for storage for the filters
 Hsv_Filter_File_Names_Dict = {
-    OBSTACLE_HSV: "ObstacleHsvFilter.pkl",
-    TRACK_COMPLETION_HSV: "TrackCompletionHsvFilter.pkl",
-    YELLOW_TRACK_LINES_HSV: "YellowTrackLinesHsvFilter.pkl",
-    BLUE_TRACK_LINES_HSV: "BlueTrackLinesHsvFilter.pkl",
-    RIVAL_BOT_HSV: "RivalBotHsvFilter.pkl",
-    ARROW_HSV: "ArrowHsvFilter.pkl"
+    OBSTACLE_HSV: "HSVStorage/ObstacleHsvFilter.pkl",
+    TRACK_COMPLETION_HSV: "HSVStorage/TrackCompletionHsvFilter.pkl",
+    YELLOW_TRACK_LINES_HSV: "HSVStorage/YellowTrackLinesHsvFilter.pkl",
+    BLUE_TRACK_LINES_HSV: "HSVStorage/BlueTrackLinesHsvFilter.pkl",
+    RIVAL_BOT_HSV: "HSVStorage/RivalBotHsvFilter.pkl",
+    ARROW_HSV: "HSVStorage/ArrowHsvFilter.pkl"
 }
 
 # Names for the HSV Filter Files for storage for the filters

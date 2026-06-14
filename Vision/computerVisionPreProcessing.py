@@ -1,5 +1,5 @@
 import cv2
-import config
+import Utils.config as config
 from HSVFilters.YellowTrackLinesHSVFilter import YellowTrackLinesHSVFilter
 from HSVFilters.BlueTrackLinesHSVFilter import BlueTrackLinesHSVFilter
 from HSVFilters.ObstacleHSVFilter import ObstacleHSVFilter
@@ -11,7 +11,7 @@ from VisionInput import VisionInput
 from typing import Dict
 import numpy as np
 import os
-import preProccessingUtils
+import Utils.preProccessingUtils as preProccessingUtils
 import time
 
 class vision:
@@ -28,7 +28,7 @@ class vision:
         # this determines if the cnn method of arrow matching should be used
         self.modelLoaded = False    
         if config.ARROW_DETECTION_METHOD == config.CNN_METHOD:
-            from ArrowCNN import ArrowCNN
+            from CNNLogic.ArrowCNN import ArrowCNN
             import tensorflow as tf
             import keras
             # Initialize Arrow CNN
@@ -76,13 +76,12 @@ class vision:
             
     def analyse_arrow(self, contour_status, frame):
         arrow_filter = self.HSVManager[config.ARROW_HSV]
-
-        # gets the location of the bounding box of the arrow
-        x, y, w, h = arrow_filter.x, arrow_filter.y, arrow_filter.w, arrow_filter.h
-        detected_arrow = arrow_filter.hsvMask[y:y+h, x:x+w]
         
         # this runs template matching
         if config.ARROW_DETECTION_METHOD == config.TEMPLATE_MATCHING_METHOD and contour_status:
+            # gets the location of the bounding box of the arrow
+            x, y, w, h = arrow_filter.x, arrow_filter.y, arrow_filter.w, arrow_filter.h
+            detected_arrow = arrow_filter.hsvMask[y:y+h, x:x+w]
             resized_arrow = cv2.resize(detected_arrow, config.TEMPLATE_SIZE)
             
             # Perform Template Matching
@@ -110,10 +109,13 @@ class vision:
                     
         # run CNN prediction
         if self.modelLoaded and config.ARROW_DETECTION_METHOD == config.CNN_METHOD:
-            # OPTIMIZATION: Only call CNN if a contour is detected
+            # only use the CNN if a contour is detected
             if contour_status:
-                # OPTIMIZATION: Throttle inference to every 3rd frame
-                if self.inference_counter % 3 == 0:
+                # Throttle inference to run every nth frame
+                if self.inference_counter % config.CNN_INFERENCE == 0:
+                    # gets the location of the bounding box of the arrow
+                    x, y, w, h = arrow_filter.x, arrow_filter.y, arrow_filter.w, arrow_filter.h
+                    detected_arrow = arrow_filter.hsvMask[y:y+h, x:x+w]
                     # predicts the direction of the arrow
                     self.last_direction, self.last_conf = self.arrowCNN.predict(detected_arrow)
                 

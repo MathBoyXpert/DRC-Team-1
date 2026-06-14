@@ -1,5 +1,5 @@
 import numpy as np
-import config
+import Utils.config as config
 import cv2
 from .HSVFilterInterface import HSVFilterInterface
 from VisionInput import VisionInput

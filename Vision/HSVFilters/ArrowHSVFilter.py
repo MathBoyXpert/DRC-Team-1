@@ -1,5 +1,5 @@
 import numpy as np
-import config
+import Utils.config as config
 from .HSVFilterInterface import HSVFilterInterface
 
 class ArrowHSVFilter(HSVFilterInterface):

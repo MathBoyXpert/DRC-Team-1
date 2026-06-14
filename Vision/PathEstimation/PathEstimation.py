@@ -28,6 +28,8 @@ class PathEstimation:
         return (left_curvature + right_curvature) / 2
     
     def calculate_centreline(self):
+
+        ### This gets the x_base that was from the histogram calculations
         left_base = self.yellow_filter.x_base
         right_base = self.blue_filter.x_base
         if left_base is None or right_base is None:

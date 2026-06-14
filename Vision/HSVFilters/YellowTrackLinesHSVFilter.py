@@ -30,19 +30,14 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
         return np.array([self.hsvValueMap["yellow_hMax"], self.hsvValueMap["yellow_sMax"], self.hsvValueMap["yellow_vMax"]])
 
     def Filter_Main_Process(self, frame, hsvFrame):
-        result = super().Filter_Main_Process(frame, hsvFrame)
+        result, contour_status = super().Filter_Main_Process(frame, hsvFrame)
         bounded_mask_y = np.zeros_like(self.hsvMask)
 
-        if self.hsvMask is not None and self.c is not None:
-            x, y, h, w = cv2.boundingRect(self.c)
-            bounded_mask_y = np.zeros_like(self.hsvMask)
-
-            bounded_mask_y[y:y+h, x:x+w] = self.hsvMask[y:y+h, x:x+w]
+        if contour_status:
+            bounded_mask_y[self.y:self.y+self.h, self.x:self.x+self.w] = self.hsvMask[self.y:self.y+self.h, self.x:self.x+self.w]
     
         msk = self.trackline.find_lane_pixels(bounded_mask_y, "Left Sliding window (yellow)")
-
-            # cv2.imshow("Left Sliding Window (Yellow)", msk)
-        return result
+        return result, contour_status
     
     # prints all current HSV values for debugging and displaying
     def debug_print_filters(self):

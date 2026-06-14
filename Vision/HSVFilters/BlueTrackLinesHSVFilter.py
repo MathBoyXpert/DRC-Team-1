@@ -30,17 +30,13 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
         return np.array([self.hsvValueMap["blue_hMax"], self.hsvValueMap["blue_sMax"], self.hsvValueMap["blue_vMax"]])
 
     def Filter_Main_Process(self, frame, hsvFrame):
-        result = super().Filter_Main_Process(frame, hsvFrame)
+        result, contour_status = super().Filter_Main_Process(frame, hsvFrame)
         bounded_mask_b = np.zeros_like(self.hsvMask)
-
-        if self.hsvMask is not None and self.c is not None:
-            x, y, h, w = cv2.boundingRect(self.c)
-            bounded_mask_b = np.zeros_like(self.hsvMask)
-
-            bounded_mask_b[y:y+h, x:x+w] = self.hsvMask[y:y+h, x:x+w]
+        if contour_status:
+            bounded_mask_b[self.y:self.y+self.h, self.x:self.x+self.w] = self.hsvMask[self.y:self.y+self.h, self.x:self.x + self.w]
         
         msk = self.trackline.find_lane_pixels(bounded_mask_b, "Right Sliding window (blue)")
-        return result
+        return result, contour_status
 
     # prints all current HSV values for debugging and displaying
     def debug_print_filters(self):

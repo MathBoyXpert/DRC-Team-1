@@ -41,3 +41,6 @@ class PathEstimation:
         ## Find the offset from the centreline
         lane_offset = (self.CAR_CENTRE - self.calculate_centreline())
         return np.arctan(lane_offset / curvature) * 180/ np.pi
+    
+    ## Note: Refer to this Youtube Video to see where I got the implementations fopr all of these from.
+    ## https://www.youtube.com/watch?v=Birvs5MYOLY&list=PLCiTDJays9rWQkp_IuHOd15JXHyVaYQKE&index=5

@@ -20,6 +20,8 @@ class BlueTrackLinesHSVFilter(HSVFilterInterface):
 
         super().__init__()
         self.trackline = TrackLinesFilter()
+        self.fit = None
+        self.x_base = None
 
     # This creates an array of the minimum HSV values for the blue mask
     def Get_Min_Vals_Arr(self):

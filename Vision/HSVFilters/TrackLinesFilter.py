@@ -76,7 +76,9 @@ class TrackLinesFilter:
             self.detect_polynomial(msk, fit, frame.shape[0])
         
         cv2.imshow(window_name, msk)
-        return msk
+
+        #Returns the mask and the curve fit
+        return msk, fit, x_base
 
     def detect_polynomial(self, frame, fit, height):
         plot_y = np.linspace(0, height - 1, height)
@@ -87,9 +89,7 @@ class TrackLinesFilter:
             pt2 = (int(x[i+1]), int(plot_y[i+1]))
             if 0 <= pt1[0] < frame.shape[1] and 0 <= pt2[0] < frame.shape[1]:
                 cv2.line(frame, pt1, pt2, (255, 255, 0), 2)
-
-    def calculate_angle_steering(self, fit, height, frame_width):
-        pass
+    
     ## Ignore this function
     # def window_shift(self, histogram, x_base):
     #     """

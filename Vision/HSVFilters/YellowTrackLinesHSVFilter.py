@@ -20,6 +20,8 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
 
         super().__init__()
         self.trackline = TrackLinesFilter()
+        self.fit = None
+        self.x_base = None
 
     # This creates an array of the minimum HSV values for the yellow mask
     def Get_Min_Vals_Arr(self):
@@ -36,7 +38,10 @@ class YellowTrackLinesHSVFilter(HSVFilterInterface):
         if contour_status:
             bounded_mask_y[self.y:self.y+self.h, self.x:self.x+self.w] = self.hsvMask[self.y:self.y+self.h, self.x:self.x+self.w]
     
-        msk = self.trackline.find_lane_pixels(bounded_mask_y, "Left Sliding window (yellow)")
+        msk, fit, x_base = self.trackline.find_lane_pixels(bounded_mask_y, "Left Sliding window (yellow)")
+        if msk is not None and fit is not None:
+            self.fit = fit
+            self.x_base = x_base
         return result, contour_status
     
     # prints all current HSV values for debugging and displaying

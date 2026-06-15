@@ -24,7 +24,7 @@ class PathEstimation:
         left_curvature = ((1 + (2* left_fit[0]*y_eval+ left_fit[1])**2)**1.5) / np.abs(2*left_fit[0])
         right_curvature = ((1 + (2 *right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.abs(2*right_fit[0])
 
-        ## Returns the curve
+        ## Returns the curve this ill give you the coefficients of the poolynomail which then can be accessed by using polyfit.
         return (left_curvature + right_curvature) / 2
     
     def calculate_centreline(self):
@@ -35,8 +35,8 @@ class PathEstimation:
         if left_base is None or right_base is None:
             return None
         
-        
-        
+
+        ## This retuns the centreline. 
         return (left_base + right_base) / 2
         
     def calculate_steering_angle(self):

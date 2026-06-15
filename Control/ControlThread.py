@@ -87,9 +87,6 @@ class AckermannRobot:
         self.drive_motor.stop()
         self.steering_servo.value = config.STEERING_CENTER
 
-# Global robot instance
-robot = AckermannRobot()
-
 def navigate_with_pid(cx, speed=0.5):
     """
     Main navigation function to be called from the vision loop.

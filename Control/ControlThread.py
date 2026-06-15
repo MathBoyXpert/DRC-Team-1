@@ -120,3 +120,7 @@ if __name__ == "__main__":
             if user_name == 'd':
                 robot.adjust_servo(0.1)
                 sleep(0.1)
+                
+            # kill the loop
+            if user_name == 'q':
+                break

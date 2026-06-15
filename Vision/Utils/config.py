@@ -1,5 +1,33 @@
 import cv2
 
+
+#############################
+##### CONTROL CONSTANTS #####
+#############################
+# DRIVE MOTOR
+DRIVE_MOTOR_PWM1 = 12
+DRIVE_MOTOR_DIR1 = 16
+
+DRIVE_MOTOR_PWM2 = 13
+DRIVE_MOTOR_DIR2 = 26
+
+# STEERING SERVO
+STEERING_SERVO_PIN = 27
+STEERING_CENTER = 0.0
+STEERING_MAX_LEFT = -1.0
+STEERING_MAX_RIGHT = 1.0
+
+# PID CONSTANTS
+STEERING_KP = 0.1
+STEERING_KI = 0.01
+STEERING_KD = 0.05
+
+
+
+############################
+##### VISION CONSTANTS #####
+############################
+
 # this is for changing the video input (0..*) with the number
 VIDEO_INPUT = 0
 

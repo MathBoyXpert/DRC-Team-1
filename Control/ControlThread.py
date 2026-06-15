@@ -1,4 +1,4 @@
-from gpiozero import Motor, Servo
+from gpiozero import Servo, PhaseEnableMotor
 from time import time, sleep
 from Vision.Utils import config
 
@@ -31,8 +31,8 @@ class PID:
 class AckermannRobot:
     def __init__(self):
         # Initialize hardware
-        self.drive_motor1 = Motor(config.DRIVE_MOTOR_PWM1, config.DRIVE_MOTOR_DIR1)
-        self.drive_motor2 = Motor(config.DRIVE_MOTOR_PWM2, config.DRIVE_MOTOR_DIR2)
+        self.drive_motor1 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
+        self.drive_motor2 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR2, config.DRIVE_MOTOR_PWM2)
         self.steering_servo = Servo(config.STEERING_SERVO_PIN)
         
         # Initialize PID for steering

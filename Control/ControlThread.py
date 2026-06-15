@@ -1,7 +1,6 @@
 from gpiozero import Motor, Servo
 from time import time, sleep
-from ..Vision.Utils import config
-import cv2
+from Vision.Utils import config
 
 class PID:
     def __init__(self, kp, ki, kd, setpoint=0):
@@ -101,6 +100,7 @@ def navigate_with_pid(cx, speed=0.5):
 
 if __name__ == "__main__":
     # Test drive
+    robot = AckermannRobot()
     while True:
             # checks for an exit input
             user_name = input("Enter dir: ")

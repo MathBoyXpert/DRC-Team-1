@@ -2,10 +2,10 @@ from HSVFilters.BlueTrackLinesHSVFilter import BlueTrackLinesHSVFilter
 from HSVFilters.YellowTrackLinesHSVFilter import YellowTrackLinesHSVFilter
 
 import numpy as np
-
+import Utils.config as config
 
 class PathEstimation:
-    CAR_CENTRE = 320 ## This is frame size (640) / 2 = 320
+    CAR_CENTRE = config.WIDTH ## This is frame size (640) / 2 = 320
 
     ## Takes in the yellow and blue filters when initialising the class
     def __init__(self, yellow_filter: YellowTrackLinesHSVFilter, blue_filter: BlueTrackLinesHSVFilter):

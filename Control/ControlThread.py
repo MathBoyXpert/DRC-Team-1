@@ -102,22 +102,24 @@ def navigate_with_pid(cx, speed=0.5):
 if __name__ == "__main__":
     # Test drive
     while True:
-         # grabs the key pressed
-            key = cv2.waitKey(1) & 0xFF
-
             # checks for an exit input
-            if key == ord('q'):
-                break
+            user_name = input("Enter dir: ")
             
-            if key == ord('w'):
+            if user_name == 'w':
                 robot.drive(0.1)
+                sleep(1)
+                robot.drive(0)
 
-            if key == ord('s'):
+            if user_name == 's':
                 robot.drive(-0.1)
+                sleep(1)
+                robot.drive(0)
                 
-            if key == ord('a'):
+            if user_name == 'a':
                 robot.adjust_servo(-0.1)
+                sleep(0.1)
 
             # this trains the AI
-            if key == ord('d'):
-                robot.adjust_servo(-0.1)
+            if user_name == 'd':
+                robot.adjust_servo(0.1)
+                sleep(0.1)

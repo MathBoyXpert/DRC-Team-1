@@ -131,3 +131,10 @@ sudo systemctl enable --now pigpiod
 
 # 5. Check the status to confirm it's running cleanly
 sudo systemctl status pigpiod
+
+fastandcurious@drc-pi:~/pigpio-79 $ sudo cp util/pigpiod.service /etc/systemd/system/
+fastandcurious@drc-pi:~/pigpio-79 $ sudo sed -i '/Type=forking/a PIDFile=/run/pigpio.pid' /etc/systemd/system/pigpiod.service
+fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl daemon-reload
+fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl enable --now pigpiod
+Unit /etc/systemd/system/pigpiod.service is added as a dependency to a non-existent unit multi-user.target.
+Failed to start pigpiod.service: Unit sysinit.target not found.

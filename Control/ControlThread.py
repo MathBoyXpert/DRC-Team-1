@@ -1,5 +1,5 @@
 import sys
-from gpiozero import Servo, PhaseEnableMotor
+from gpiozero import Servo, PhaseEnableMotor, AngularServo
 from time import time, sleep
 from sshkeyboard import listen_keyboard, stop_listening
 
@@ -38,7 +38,7 @@ class AckermannRobot:
         # Initialize hardware
         self.drive_motor1 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
         self.drive_motor2 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR2, config.DRIVE_MOTOR_PWM2)
-        self.steering_servo = Servo(config.STEERING_SERVO_PIN)
+        self.steering_servo = AngularServo(config.STEERING_SERVO_PIN, min_angle=0, max_angle=270, min_pulse_width=0.0004, max_pulse_width=0.0028)
         
         # Initialize PID for steering
         self.pid = PID()
@@ -70,12 +70,12 @@ class AckermannRobot:
 
 
 
-    def adjust_servo(self, value):
+    def adjust_servo(self, angle):
         """
         Adjust the servo from the current position to a new position.
-        value: value between -1 and 1.
+        value: value between 0 and 270.
         """
-        self.steering_servo.value = value
+        self.steering_servo.angle = angle
 
     def drive(self, speed):
         """
@@ -134,13 +134,14 @@ if __name__ == "__main__":
     # Test drive
     robot = AckermannRobot()
     # robot.manual_drive_mode()
-    robot.adjust_servo(1)
+    for i in range(65, 157):
+        robot.adjust_servo(i)
+        sleep(1)
     sleep(1)
-    robot.adjust_servo(-0.5)
-    sleep(1)
-    robot.adjust_servo(-1)
+    robot.adjust_servo(135)
     sleep(1)
     sleep(1)
+
 
 
     # robot.drive(0)

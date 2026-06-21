@@ -39,3 +39,24 @@ Traceback (most recent call last):
     import _ssl             # if we can't import it, let the error propagate
     ^^^^^^^^^^^
 ModuleNotFoundError: No module named '_ssl'
+
+Option 2: Recompile Python 3.13 from source (If you absolutely need 3.13)
+If you compiled Python 3.13 yourself because your robotics project explicitly requires features unique to 3.13, you need to fix the dependency chain and re-run the compilation:
+
+Install the missing development headers:
+
+Bash
+sudo apt update
+sudo apt install libssl-dev build-essential zlib1g-dev libffi-dev -y
+Head back to your original Python source code folder (where you downloaded and extracted Python 3.13, usually something like ~/Python-3.13.x/):
+
+Bash
+cd ~/Python-3.13.x  # Adjust this to your actual source path
+Reconfigure and recompile:
+Running ./configure now will successfully detect the libssl-dev headers you just installed and configure the SSL module automatically.
+
+Bash
+./configure --enable-optimizations
+make -j$(nproc)
+sudo make altinstall
+Once completed, your custom Python 3.13 will possess full cryptographic capabilities, allowing you to create your virtual environment normally.

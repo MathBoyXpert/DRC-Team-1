@@ -1,6 +1,8 @@
-OpenCV
 Pickle
-TensorFlow
-sshkeyboard
-sklearn
-matplotlib
+OpenCV -        pip install opencv-python
+TensorFlow -    pip install tensorflow
+sshkeyboard -   pip install sshkeyboard
+sklearn -       pip install scikit-learn
+matplotlib -    pip install matplotlib
+gpiozero -      pip install gpiozero
+rpi-lgpio -     pip install rpi-lgpio

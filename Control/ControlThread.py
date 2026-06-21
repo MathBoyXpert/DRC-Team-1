@@ -1,7 +1,10 @@
+import sys
 from gpiozero import Servo, PhaseEnableMotor
 from time import time, sleep
-from Vision.Utils import config
 from sshkeyboard import listen_keyboard, stop_listening
+
+sys.path.insert(1, "/home/fastandcurious/drcTest/DRC-Team-1/Vision/Utils/")
+import config
 
 class PID:
     def __init__(self):

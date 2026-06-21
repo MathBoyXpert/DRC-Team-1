@@ -73,3 +73,23 @@ Traceback (most recent call last):
   File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 302, in _default_pin_factory
     raise BadPinFactory('Unable to load any default pin factory!')
 gpiozero.exc.BadPinFactory: Unable to load any default pin factory!
+
+# 1. Install the required build tools
+sudo apt update
+sudo apt install --no-install-recommends -y python3-setuptools python3-full wget make gcc
+
+# 2. Download the latest source package from the official repository
+wget https://github.com/joan2937/pigpio/archive/refs/tags/v79.tar.gz
+
+# 3. Extract the downloaded file
+tar zxf v79.tar.gz
+
+# 4. Move into the extracted directory and build it
+cd pigpio-79
+make
+sudo make install
+
+# 5. Reload system configs and enable the daemon globally
+sudo ldconfig
+sudo systemctl daemon-reload
+sudo systemctl enable --now pigpiod

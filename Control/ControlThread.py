@@ -1,13 +1,14 @@
 from gpiozero import Servo, PhaseEnableMotor
 from time import time, sleep
 from Vision.Utils import config
+from sshkeyboard import listen_keyboard, stop_listening
 
 class PID:
-    def __init__(self, kp, ki, kd, setpoint=0):
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
-        self.setpoint = setpoint
+    def __init__(self):
+        self.kp = config.STEERING_KP
+        self.ki = config.STEERING_KI
+        self.kd = config.STEERING_KD
+        self.setpoint = config.WIDTH // 2 # this tells the set point of the controller to be the cnetre of the image
         self.last_error = 0
         self.integral = 0
         self.last_time = time()
@@ -36,9 +37,7 @@ class AckermannRobot:
         self.steering_servo = Servo(config.STEERING_SERVO_PIN)
         
         # Initialize PID for steering
-        # The setpoint is the center of the image (WIDTH / 2)
-        self.pid = PID(config.STEERING_KP, config.STEERING_KI, config.STEERING_KD, 
-                       setpoint=config.WIDTH // 2)
+        self.pid = PID()
 
     def set_steering(self, cx):
         """
@@ -64,9 +63,15 @@ class AckermannRobot:
         
         self.steering_servo.value = servo_value
 
+
+
+
     def adjust_servo(self, value):
+        """
+        Adjust the servo from the current position to a new position.
+        value: value between -1 and 1.
+        """
         self.steering_servo.value += value
-        
 
     def drive(self, speed):
         """
@@ -84,9 +89,35 @@ class AckermannRobot:
             self.drive_motor2.stop()
 
     def stop(self):
-        self.drive_motor.stop()
+        self.drive_motor1.stop()
+        self.drive_motor2.stop()
         self.steering_servo.value = config.STEERING_CENTER
+    
+    def manual_drive_mode(self):
+        print("\n--- Manual Control Activated ---")
+        print("Use W/S to drive, A/D to steer. Press 'Q' to quit.")
+        
+        def press(key):
+            if key == 'w':
+                self.drive(0.3)  # Adjust speed adjustments here
+            elif key == 's':
+                self.drive(-0.3)
+            elif key == 'a':
+                self.adjust_servo(-0.15)
+            elif key == 'd':
+                self.adjust_servo(0.15)
+            elif key == 'q':
+                print("\nExiting Manual Control...")
+                stop_listening()
 
+        def release(key):
+            # When you lift your finger off driving keys, the robot cuts engine power
+            if key in ['w', 's']:
+                self.drive(0)
+
+        # Starts the operational terminal keyboard listener
+        listen_keyboard(on_press=press, on_release=release)
+        self.stop()
 def navigate_with_pid(cx, speed=0.5):
     """
     Main navigation function to be called from the vision loop.
@@ -94,7 +125,7 @@ def navigate_with_pid(cx, speed=0.5):
     """
     robot.set_steering(cx)
     robot.drive(speed)
-
+    
 if __name__ == "__main__":
     # Test drive
     robot = AckermannRobot()

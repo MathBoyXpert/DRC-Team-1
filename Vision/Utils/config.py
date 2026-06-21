@@ -22,7 +22,8 @@ STEERING_KP = 0.1
 STEERING_KI = 0.01
 STEERING_KD = 0.05
 
-
+# MANUAL CONTROL CONSTANTS
+MANUAL_SPEED = 0.3
 
 ############################
 ##### VISION CONSTANTS #####

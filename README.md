@@ -2,6 +2,7 @@
 This will be our github repo for our team DRC Team 1
 t0ky0drIft2718
 CREATEf4stAndcurI0us
+source ml_env/bin/activate
 
 sudo apt update && sudo apt install libatlas-base-dev libhdf5-dev python3-h5py -y && sudo pip3 install tensorflow --break
 [sudo] password for fastandcurious: 
@@ -27,23 +28,25 @@ source ml_env/bin/activate
 pip install --upgrade pip
 pip install h5py tensorflowpython3 -m venv ml_env
 
-fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ python3 -m venv ml_env
-fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ ^[[200~pip install --upgrade pip
-bash: $'\E[200~pip': command not found
-fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ pip install --upgrade pip
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-    
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-    
-    For more information visit http://rptl.io/venv
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
+(ml_env) fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ pip install opencv-python-headless
+WARNING: Disabling truststore since ssl support is missing
+WARNING: pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+Could not fetch URL https://pypi.org/simple/opencv-python-headless/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/opencv-python-headless/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError("Can't connect to HTTPS URL because the SSL module is not available.")': /simple/opencv-python-headless/
+Could not fetch URL https://www.piwheels.org/simple/opencv-python-headless/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='www.piwheels.org', port=443): Max retries exceeded with url: /simple/opencv-python-headless/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+ERROR: Could not find a version that satisfies the requirement opencv-python-headless (from versions: none)
+WARNING: pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+Could not fetch URL https://pypi.org/simple/pip/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/pip/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+Could not fetch URL https://www.piwheels.org/simple/pip/: There was a problem confirming the ssl certificate: HTTPSConnectionPool(host='www.piwheels.org', port=443): Max retries exceeded with url: /simple/pip/ (Caused by SSLError("Can't connect to HTTPS URL because the SSL module is not available.")) - skipping
+ERROR: No matching distribution found for opencv-python-headless
+(ml_env) fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ 

@@ -35,12 +35,12 @@ class PID:
 
 class AckermannRobot:
     def __init__(self):
-        # Initialize hardware
+        # set the hardware by linking them with the pins
         self.drive_motor1 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
         self.drive_motor2 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR2, config.DRIVE_MOTOR_PWM2)
         self.steering_servo = AngularServo(config.STEERING_SERVO_PIN, min_angle=0, max_angle=270, min_pulse_width=0.0004, max_pulse_width=0.0028)
         
-        # Initialize PID for steering
+        # initialise PID for steering
         self.pid = PID()
 
     def set_steering(self, cx):
@@ -49,7 +49,7 @@ class AckermannRobot:
         cx: Centroid X from track line filter.
         """
         if cx is None:
-            # If no line is detected, keep steering at center or perform search
+            # if no line is detected keep steering at the center (aka straight)
             self.steering_servo.value = config.STEERING_CENTER
             return
 
@@ -67,20 +67,17 @@ class AckermannRobot:
         
         self.steering_servo.value = servo_value
 
-
-
-
     def adjust_servo(self, angle):
         """
-        Adjust the servo from the current position to a new position.
-        value: value between 0 and 270.
+        adjust the servo from the current position to a new position
+        value: value between 0 and 270
         """
         self.steering_servo.angle = angle
 
     def drive(self, speed):
         """
-        Drive forward or backward.
-        speed: value between -1 and 1.
+        drive forward or backward.
+        speed: value between -1 and 1
         """
         if speed > 0:
             self.drive_motor1.forward(speed)
@@ -99,11 +96,11 @@ class AckermannRobot:
     
     def manual_drive_mode(self):
         print("\n--- Manual Control Activated ---")
-        print("Use W/S to drive, A/D to steer. Press 'Q' to quit.")
+        print("Use W/S to drive, A/D to steer, press Q to quit")
         
         def press(key):
             if key == 'w':
-                self.drive(0.3)  # Adjust speed adjustments here
+                self.drive(0.3)
             elif key == 's':
                 self.drive(-0.3)
             elif key == 'a':
@@ -115,13 +112,14 @@ class AckermannRobot:
                 stop_listening()
 
         def release(key):
-            # When you lift your finger off driving keys, the robot cuts engine power
+            # when you lift your finger off the robot stops
             if key in ['w', 's']:
                 self.drive(0)
 
-        # Starts the operational terminal keyboard listener
+        # starts the keyboard listener in the terminal
         listen_keyboard(on_press=press, on_release=release)
         self.stop()
+
 def navigate_with_pid(cx, speed=0.5):
     """
     Main navigation function to be called from the vision loop.

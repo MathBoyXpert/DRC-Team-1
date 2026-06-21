@@ -87,17 +87,6 @@ tar zxf v79.tar.gz
 # 4. Move into the extracted directory and build it
 cd pigpio-79
 make
-sudo make install
-
-# 5. Reload system configs and enable the daemon globally
-sudo ldconfig
-sudo systemctl daemon-reload
-sudo systemctl enable --now pigpiod
-
-
-
-
-
 
 # Register the newly compiled libraries with the system
 sudo ldconfig
@@ -112,17 +101,18 @@ sudo systemctl enable --now pigpiod
 sudo systemctl status pigpiod
 
 
-× pigpiod.service - Pigpio daemon
-     Loaded: loaded (/usr/lib/systemd/system/pigpiod.service; enabled; preset: enabled)
-     Active: failed (Result: exit-code) since Sun 2026-06-21 20:33:23 AEST; 22s ago
- Invocation: 5d24a212c20b439a84f920cdcdeb64fb
-    Process: 4325 ExecStart=/usr/bin/pigpiod (code=exited, status=203/EXEC)
-        CPU: 7ms
 
-Jun 21 20:33:23 drc-pi systemd[1]: Starting pigpiod.service - Pigpio daemon...
-Jun 21 20:33:23 drc-pi (pigpiod)[4325]: pigpiod.service: Unable to locate executable '/usr/bin/pigpiod': No such file or directory
-Jun 21 20:33:23 drc-pi (pigpiod)[4325]: pigpiod.service: Failed at step EXEC spawning /usr/bin/pigpiod: No such file or directory
-Jun 21 20:33:23 drc-pi systemd[1]: pigpiod.service: Control process exited, code=exited, status=203/EXEC
-Jun 21 20:33:23 drc-pi systemd[1]: pigpiod.service: Failed with result 'exit-code'.
-Jun 21 20:33:23 drc-pi systemd[1]: Failed to start pigpiod.service - Pigpio daemon.
-~
+Step 1: Create a Symlink
+Tell the system to map the actual installation location to the path systemd is searching for:
+
+Bash
+sudo ln -s /usr/local/bin/pigpiod /usr/bin/pigpiod
+Step 2: Restart the Service
+Clear the failed state, reload the systemd manager configuration, and kickstart the daemon:
+
+Bash
+sudo systemctl daemon-reload
+sudo systemctl restart pigpiod
+Step 3: Verify the Status
+Bash
+sudo systemctl status pigpiod

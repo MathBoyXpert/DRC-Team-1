@@ -116,3 +116,12 @@ sudo systemctl restart pigpiod
 Step 3: Verify the Status
 Bash
 sudo systemctl status pigpiod
+
+
+fastandcurious@drc-pi:~/pigpio-79 $ sudo ln -s /usr/local/bin/pigpiod /usr/bin/pigpiod
+fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl daemon-reload
+fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl restart pigpiod
+
+
+Job for pigpiod.service failed because a timeout was exceeded.
+See "systemctl status pigpiod.service" and "journalctl -xeu pigpiod.service" for details.

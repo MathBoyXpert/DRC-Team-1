@@ -13,3 +13,16 @@ Hit:4 http://archive.raspberrypi.com/debian trixie InRelease
 Package libatlas-base-dev is not available, but is referred to by another package.
 This may mean that the package is missing, has been obsoleted, or
 is only available from another source
+
+# 1. Install the Python venv utility on your Pi
+sudo apt install python3-venv -y
+
+# 2. Create a virtual environment named 'ml_env' in your current directory
+python3 -m venv ml_env
+
+# 3. Activate the environment
+source ml_env/bin/activate
+
+# 4. Upgrade pip and install your packages cleanly inside the environment
+pip install --upgrade pip
+pip install h5py tensorflow

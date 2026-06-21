@@ -138,3 +138,12 @@ fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl daemon-reload
 fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl enable --now pigpiod
 Unit /etc/systemd/system/pigpiod.service is added as a dependency to a non-existent unit multi-user.target.
 Failed to start pigpiod.service: Unit sysinit.target not found.
+
+# 1. Force apt to download and overwrite the missing systemd service blueprints
+sudo apt install --reinstall systemd systemd-sysv -y
+
+# 2. Re-run the daemon manager reload to see if the targets return
+sudo systemctl daemon-reload
+
+# 3. Try starting the pigpiod daemon again
+sudo systemctl restart pigpiod

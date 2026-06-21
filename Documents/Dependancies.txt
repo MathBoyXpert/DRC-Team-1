@@ -2,3 +2,5 @@ OpenCV
 Pickle
 TensorFlow
 sshkeyboard
+sklearn
+matplotlib

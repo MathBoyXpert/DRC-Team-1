@@ -3,7 +3,8 @@ from gpiozero import Servo, PhaseEnableMotor
 from time import time, sleep
 from sshkeyboard import listen_keyboard, stop_listening
 
-sys.path.insert(1, "/home/fastandcurious/drcTest/DRC-Team-1/Vision/Utils/")
+sys.path.insert(1, "/home/fastandcurious/drcTest/DRC-Team-1/Vision/Utils/") # for the pi
+sys.path.insert(1, "C:\Users\anshg\Downloads\University\DRC\DRC-Team-1 - Copy\Vision\Utils") # for local dev
 import config
 
 class PID:

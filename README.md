@@ -131,3 +131,7 @@ sudo systemctl restart pigpiod
 
 # 5. Check the status to confirm it is active and running
 sudo systemctl status pigpiod
+
+fastandcurious@drc-pi:~/pigpio-79 $ sudo rm -rf /lib/systemd/system
+fastandcurious@drc-pi:~/pigpio-79 $ sudo sed -i '/Type=forking/a PIDFile=/run/pigpio.pid' /usr/lib/systemd/system/pigpiod.service
+sed: can't read /usr/lib/systemd/system/pigpiod.service: No such file or directory

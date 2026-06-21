@@ -75,7 +75,7 @@ class AckermannRobot:
         Adjust the servo from the current position to a new position.
         value: value between -1 and 1.
         """
-        self.steering_servo.value += value
+        self.steering_servo.value = value
 
     def drive(self, speed):
         """
@@ -133,29 +133,22 @@ def navigate_with_pid(cx, speed=0.5):
 if __name__ == "__main__":
     # Test drive
     robot = AckermannRobot()
-    while True:
-            # checks for an exit input
-            user_name = input("Enter dir: ")
-            
-            if user_name == 'w':
-                robot.drive(0.1)
-                sleep(1)
-                robot.drive(0)
+    # robot.manual_drive_mode()
+    robot.adjust_servo(1)
+    sleep(1)
+    robot.adjust_servo(-0.5)
+    sleep(1)
+    robot.adjust_servo(-1)
+    sleep(1)
+    sleep(1)
 
-            if user_name == 's':
-                robot.drive(-0.1)
-                sleep(1)
-                robot.drive(0)
-                
-            if user_name == 'a':
-                robot.adjust_servo(-0.1)
-                sleep(0.1)
 
-            # this trains the AI
-            if user_name == 'd':
-                robot.adjust_servo(0.1)
-                sleep(0.1)
-                
-            # kill the loop
-            if user_name == 'q':
-                break
+    # robot.drive(0)
+    # robot.drive_motor1.forward(0.2)
+    # sleep(1)
+    # robot.drive(0)
+    # robot.drive_motor2.forward(0.2)
+    # sleep(1)
+    # robot.drive(0)
+
+

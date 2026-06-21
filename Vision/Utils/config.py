@@ -4,15 +4,17 @@ import cv2
 #############################
 ##### CONTROL CONSTANTS #####
 #############################
-# DRIVE MOTOR
-DRIVE_MOTOR_PWM1 = 12
+# MOTORS
+# left motor
+DRIVE_MOTOR_PWM1 = 19
 DRIVE_MOTOR_DIR1 = 16
 
+# right motor
 DRIVE_MOTOR_PWM2 = 13
 DRIVE_MOTOR_DIR2 = 26
 
 # STEERING SERVO
-STEERING_SERVO_PIN = 27
+STEERING_SERVO_PIN = 4
 STEERING_CENTER = 0.0
 STEERING_MAX_LEFT = -1.0
 STEERING_MAX_RIGHT = 1.0

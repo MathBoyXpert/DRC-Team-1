@@ -117,11 +117,17 @@ Step 3: Verify the Status
 Bash
 sudo systemctl status pigpiod
 
+# 1. Clean up the misplaced file from the old path
+sudo rm -f /lib/systemd/system
 
-fastandcurious@drc-pi:~/pigpio-79 $ sudo ln -s /usr/local/bin/pigpiod /usr/bin/pigpiod
-fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl daemon-reload
-fastandcurious@drc-pi:~/pigpio-79 $ sudo systemctl restart pigpiod
+# 2. Inject the missing PIDFile configuration directly into the correct systemd service file
+sudo sed -i '/Type=forking/a PIDFile=/run/pigpio.pid' /usr/lib/systemd/system/pigpiod.service
 
+# 3. Reload the systemd process manager to parse the changes
+sudo systemctl daemon-reload
 
-Job for pigpiod.service failed because a timeout was exceeded.
-See "systemctl status pigpiod.service" and "journalctl -xeu pigpiod.service" for details.
+# 4. Restart the pigpiod hardware service
+sudo systemctl restart pigpiod
+
+# 5. Check the status to confirm it is active and running
+sudo systemctl status pigpiod

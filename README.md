@@ -28,35 +28,48 @@ source ml_env/bin/activate
 pip install --upgrade pip
 pip install h5py tensorflowpython3 -m venv ml_env
 
-fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ openssl version
-OpenSSL 3.5.6 7 Apr 2026 (Library: OpenSSL 3.5.6 7 Apr 2026)
-fastandcurious@drc-pi:~/drcTest/DRC-Team-1 $ python3 -c "import ssl; print(ssl.OPENSSL_VERSION)"
+astandcurious@drc-pi:~/drcTest/DRC-Team-1 $ /home/fastandcurious/drcTest/DRC-Team-1/ml_env/bin/python /home/fastandcurious/drcTest/DRC-Team-1/Control/ControlThread.py
+/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from lgpio: No module named 'lgpio'
+  warnings.warn(
+/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from rpigpio: No module named 'RPi'
+  warnings.warn(
+/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from pigpio: No module named 'pigpio'
+  warnings.warn(
+/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from native: unable to open /dev/gpiomem or /dev/mem; upgrade your kernel or run as root
+  warnings.warn(
 Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import ssl; print(ssl.OPENSSL_VERSION)
-    ^^^^^^^^^^
-  File "/usr/local/lib/python3.13/ssl.py", line 100, in <module>
-    import _ssl             # if we can't import it, let the error propagate
-    ^^^^^^^^^^^
-ModuleNotFoundError: No module named '_ssl'
-
-Option 2: Recompile Python 3.13 from source (If you absolutely need 3.13)
-If you compiled Python 3.13 yourself because your robotics project explicitly requires features unique to 3.13, you need to fix the dependency chain and re-run the compilation:
-
-Install the missing development headers:
-
-Bash
-sudo apt update
-sudo apt install libssl-dev build-essential zlib1g-dev libffi-dev -y
-Head back to your original Python source code folder (where you downloaded and extracted Python 3.13, usually something like ~/Python-3.13.x/):
-
-Bash
-cd ~/Python-3.13.x  # Adjust this to your actual source path
-Reconfigure and recompile:
-Running ./configure now will successfully detect the libssl-dev headers you just installed and configure the SSL module automatically.
-
-Bash
-./configure --enable-optimizations
-make -j$(nproc)
-sudo make altinstall
-Once completed, your custom Python 3.13 will possess full cryptographic capabilities, allowing you to create your virtual environment normally.
+  File "/home/fastandcurious/drcTest/DRC-Team-1/Control/ControlThread.py", line 135, in <module>
+    robot = AckermannRobot()
+  File "/home/fastandcurious/drcTest/DRC-Team-1/Control/ControlThread.py", line 39, in __init__
+    self.drive_motor1 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
+                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 108, in __call__
+    self = super().__call__(*args, **kwargs)
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/output_devices.py", line 1336, in __init__
+    phase_device=DigitalOutputDevice(phase, pin_factory=pin_factory),
+                 ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 108, in __call__
+    self = super().__call__(*args, **kwargs)
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/output_devices.py", line 192, in __init__
+    super().__init__(pin, active_high=active_high,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     initial_value=initial_value, pin_factory=pin_factory)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/output_devices.py", line 74, in __init__
+    super().__init__(pin, pin_factory=pin_factory)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/mixins.py", line 75, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 544, in __init__
+    super().__init__(pin_factory=pin_factory)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 245, in __init__
+    Device.ensure_pin_factory()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 270, in ensure_pin_factory
+    Device.pin_factory = Device._default_pin_factory()
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/fastandcurious/drcTest/DRC-Team-1/ml_env/lib/python3.13/site-packages/gpiozero/devices.py", line 302, in _default_pin_factory
+    raise BadPinFactory('Unable to load any default pin factory!')
+gpiozero.exc.BadPinFactory: Unable to load any default pin factory!

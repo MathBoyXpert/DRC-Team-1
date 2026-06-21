@@ -117,21 +117,17 @@ Step 3: Verify the Status
 Bash
 sudo systemctl status pigpiod
 
-# 1. Clean up the misplaced file from the old path
-sudo rm -f /lib/systemd/system
+# 1. Copy the fresh service file from your current folder to the correct system path
+sudo cp util/pigpiod.service /etc/systemd/system/
 
-# 2. Inject the missing PIDFile configuration directly into the correct systemd service file
-sudo sed -i '/Type=forking/a PIDFile=/run/pigpio.pid' /usr/lib/systemd/system/pigpiod.service
+# 2. Inject the missing PIDFile configuration line right after 'Type=forking'
+sudo sed -i '/Type=forking/a PIDFile=/run/pigpio.pid' /etc/systemd/system/pigpiod.service
 
-# 3. Reload the systemd process manager to parse the changes
+# 3. Reload the systemd process manager to register the new service file
 sudo systemctl daemon-reload
 
-# 4. Restart the pigpiod hardware service
-sudo systemctl restart pigpiod
+# 4. Enable the service to run automatically on boot and start it right now
+sudo systemctl enable --now pigpiod
 
-# 5. Check the status to confirm it is active and running
+# 5. Check the status to confirm it's running cleanly
 sudo systemctl status pigpiod
-
-fastandcurious@drc-pi:~/pigpio-79 $ sudo rm -rf /lib/systemd/system
-fastandcurious@drc-pi:~/pigpio-79 $ sudo sed -i '/Type=forking/a PIDFile=/run/pigpio.pid' /usr/lib/systemd/system/pigpiod.service
-sed: can't read /usr/lib/systemd/system/pigpiod.service: No such file or directory

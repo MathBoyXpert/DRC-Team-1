@@ -94,68 +94,19 @@ sudo ldconfig
 sudo systemctl daemon-reload
 sudo systemctl enable --now pigpiod
 
-fastandcurious@drc-pi:~ $ tar zxf v79.tar.gz
-fastandcurious@drc-pi:~ $ cd pigpio-79
-fastandcurious@drc-pi:~/pigpio-79 $ make
-gcc -O3 -Wall -pthread -fpic -c -o pigpio.o pigpio.c
-gcc -O3 -Wall -pthread -fpic -c -o command.o command.c
-gcc -shared -pthread -Wl,-soname,libpigpio.so.1 -o libpigpio.so.1 pigpio.o command.o
-ln -fs libpigpio.so.1 libpigpio.so
-strip --strip-unneeded libpigpio.so
-size     libpigpio.so
-   text	   data	    bss	    dec	    hex	filename
- 303208	  10656	 611656	 925520	  e1f50	libpigpio.so
-gcc -O3 -Wall -pthread -fpic -c -o pigpiod_if.o pigpiod_if.c
-gcc -shared -pthread -Wl,-soname,libpigpiod_if.so.1 -o libpigpiod_if.so.1 pigpiod_if.o command.o
-ln -fs libpigpiod_if.so.1 libpigpiod_if.so
-strip --strip-unneeded libpigpiod_if.so
-size     libpigpiod_if.so
-   text	   data	    bss	    dec	    hex	filename
-  63287	   8696	  49304	 121287	  1d9c7	libpigpiod_if.so
-gcc -O3 -Wall -pthread -fpic -c -o pigpiod_if2.o pigpiod_if2.c
-gcc -shared -pthread -Wl,-soname,libpigpiod_if2.so.1 -o libpigpiod_if2.so.1 pigpiod_if2.o command.o
-ln -fs libpigpiod_if2.so.1 libpigpiod_if2.so
-strip --strip-unneeded libpigpiod_if2.so
-size     libpigpiod_if2.so
-   text	   data	    bss	    dec	    hex	filename
-  87677	   8704	   2936	  99317	  183f5	libpigpiod_if2.so
-gcc -O3 -Wall -pthread   -c -o x_pigpio.o x_pigpio.c
-gcc -o x_pigpio x_pigpio.o -L. -lpigpio -pthread -lrt
-gcc -O3 -Wall -pthread   -c -o x_pigpiod_if.o x_pigpiod_if.c
-gcc -o x_pigpiod_if x_pigpiod_if.o -L. -lpigpiod_if -pthread -lrt
-gcc -O3 -Wall -pthread   -c -o x_pigpiod_if2.o x_pigpiod_if2.c
-gcc -o x_pigpiod_if2 x_pigpiod_if2.o -L. -lpigpiod_if2 -pthread -lrt
-gcc -O3 -Wall -pthread   -c -o pig2vcd.o pig2vcd.c
-gcc -o pig2vcd pig2vcd.o
-strip pig2vcd
-gcc -O3 -Wall -pthread   -c -o pigpiod.o pigpiod.c
-gcc -o pigpiod pigpiod.o -L. -lpigpio -pthread -lrt
-strip pigpiod
-gcc -O3 -Wall -pthread   -c -o pigs.o pigs.c
-gcc -o pigs pigs.o command.o
-strip pigs
-fastandcurious@drc-pi:~/pigpio-79 $ sudo make install
-install -m 0755 -d                             /opt/pigpio/cgi
-install -m 0755 -d                             /usr/local/include
-install -m 0644 pigpio.h                       /usr/local/include
-install -m 0644 pigpiod_if.h                   /usr/local/include
-install -m 0644 pigpiod_if2.h                  /usr/local/include
-install -m 0755 -d                             /usr/local/lib
-install -m 0755 libpigpio.so.1      /usr/local/lib
-install -m 0755 libpigpiod_if.so.1  /usr/local/lib
-install -m 0755 libpigpiod_if2.so.1 /usr/local/lib
-cd /usr/local/lib && ln -fs libpigpio.so.1      libpigpio.so
-cd /usr/local/lib && ln -fs libpigpiod_if.so.1  libpigpiod_if.so
-cd /usr/local/lib && ln -fs libpigpiod_if2.so.1 libpigpiod_if2.so
-install -m 0755 -d                             /usr/local/bin
-install -m 0755 pig2vcd                        /usr/local/bin
-install -m 0755 pigpiod                        /usr/local/bin
-install -m 0755 pigs                           /usr/local/bin
-if which python2; then python2 setup.py install ; fi
-if which python3; then python3 setup.py install ; fi
-/usr/local/bin/python3
-Traceback (most recent call last):
-  File "/home/fastandcurious/pigpio-79/setup.py", line 3, in <module>
-    from distutils.core import setup
-ModuleNotFoundError: No module named 'distutils'
-make: *** [Makefile:107: install] Error 1
+
+
+
+
+
+# Register the newly compiled libraries with the system
+sudo ldconfig
+
+# Set up the systemd service files so it runs in the background
+sudo cp util/pigpiod.service /lib/systemd/system/
+sudo systemctl daemon-reload
+
+# Start the service right now and enable it to run on boot
+sudo systemctl enable --now pigpiod
+
+sudo systemctl status pigpiod

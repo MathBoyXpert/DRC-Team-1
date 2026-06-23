@@ -4,6 +4,7 @@
     ],
     "python.analysis.extraPaths": [
         "./Vision/Utils",
-        "./Vision"
+        "./Vision",
+        "./Control/"
     ]
 }

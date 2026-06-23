@@ -117,6 +117,9 @@ class VisionControlBridge:
             elif cx_blue is not None:
                 # Right line only (bend to the left)
                 calculated_center = cx_blue - self.lane_offset
+            
+            print(f"yellow cx: {cx_yellow}, blue cx: {cx_blue}")
+            
                 
         # # 5. Obstacle Avoidance Overlay (Purple Hurdles)
         # obstacle_avoidance_bias = 0

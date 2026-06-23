@@ -48,29 +48,29 @@ class VisionControlBridge:
         rival_filter = HSVManager[config.RIVAL_BOT_HSV]
         track_completion_filter = HSVManager[config.TRACK_COMPLETION_HSV]
         
-        ################# TRACK COMPLETION TRACKING #################
-        # count the number of times youve seen the green the green line as you go around the track
-        if track_completion_filter.contour_status:
-            # avoids double counting a single track completion line with a cooldown
-            if time.time() - self.finish_line_cooldown > config.TRACK_COMPLETION_LINE_COOLDOWN:
-                self.current_lap += 1
-                self.finish_line_cooldown = time.time()
-                print(f"Lap {self.current_lap}/{self.total_laps} completed!")
+        # ################# TRACK COMPLETION TRACKING #################
+        # # count the number of times youve seen the green the green line as you go around the track
+        # if track_completion_filter.contour_status:
+        #     # avoids double counting a single track completion line with a cooldown
+        #     if time.time() - self.finish_line_cooldown > config.TRACK_COMPLETION_LINE_COOLDOWN:
+        #         self.current_lap += 1
+        #         self.finish_line_cooldown = time.time()
+        #         print(f"Lap {self.current_lap}/{self.total_laps} completed!")
                 
-                if self.current_lap >= self.total_laps:
-                    print("Finished the final lap. Stopping for -5s bonus")
-                    self.state = config.FINISHED
-                    self.robot.stop()
-                    return
+        #         if self.current_lap >= self.total_laps:
+        #             print("Finished the final lap. Stopping for -5s bonus")
+        #             self.state = config.FINISHED
+        #             self.robot.stop()
+        #             return
         
-        ################# ARROW DETECTION TRACKING #################
-        # this tracks the arrow HSV filter for a potential turning challenge
-        if arrow_direction in ["Left", "Right"] and arrow_confidence > config.ARROW_CONFIDENCE:
-            self.active_direction = arrow_direction
-            self.arrow_override_start = time.time()
+        # ################# ARROW DETECTION TRACKING #################
+        # # this tracks the arrow HSV filter for a potential turning challenge
+        # if arrow_direction in ["Left", "Right"] and arrow_confidence > config.ARROW_CONFIDENCE:
+        #     self.active_direction = arrow_direction
+        #     self.arrow_override_start = time.time()
 
-        # checks if the arrow overide should take place right now
-        in_arrow_zone = (time.time() - self.arrow_override_start < config.ARROW_OVER_RIDE_DURATION)
+        # # checks if the arrow overide should take place right now
+        # in_arrow_zone = (time.time() - self.arrow_override_start < config.ARROW_OVER_RIDE_DURATION)
         
         ################# TRACK LINES TRACKING #################
         # gets the positions of the track lines
@@ -88,6 +88,8 @@ class VisionControlBridge:
         
         # Calculating the center position that should be used for pid
         calculated_center = None
+        ################################################################################################################################################################################################################
+        in_arrow_zone = False #################################################### remove ########################################################################################################
         if in_arrow_zone:
             # follow only the inner boundary of the fork to stay on path
             if self.active_direction == "Left":
@@ -116,37 +118,39 @@ class VisionControlBridge:
                 # Right line only (bend to the left)
                 calculated_center = cx_blue - self.lane_offset
                 
-        # 5. Obstacle Avoidance Overlay (Purple Hurdles)
-        obstacle_avoidance_bias = 0
-        if obstacle_filter and obstacle_filter.cx is not None and obstacle_filter.cy is not None:
-            # Only trigger if the obstacle is in the bottom 60% of the frame (close)
-            if obstacle_filter.cy > (self.height * 0.4):
-                # Calculate how close the obstacle is
-                proximity_scale = (obstacle_filter.cy - (self.height * 0.4)) / (self.height * 0.6)
+        # # 5. Obstacle Avoidance Overlay (Purple Hurdles)
+        # obstacle_avoidance_bias = 0
+        # if obstacle_filter and obstacle_filter.cx is not None and obstacle_filter.cy is not None:
+        #     # Only trigger if the obstacle is in the bottom 60% of the frame (close)
+        #     if obstacle_filter.cy > (self.height * 0.4):
+        #         # Calculate how close the obstacle is
+        #         proximity_scale = (obstacle_filter.cy - (self.height * 0.4)) / (self.height * 0.6)
                 
-                # If obstacle is on the left side, bias target centerline to the right
-                if obstacle_filter.cx < self.target_center:
-                    obstacle_avoidance_bias = int(80 * proximity_scale) # steer right
-                else:
-                    obstacle_avoidance_bias = -int(80 * proximity_scale) # steer left
+        #         # If obstacle is on the left side, bias target centerline to the right
+        #         if obstacle_filter.cx < self.target_center:
+        #             obstacle_avoidance_bias = int(80 * proximity_scale) # steer right
+        #         else:
+        #             obstacle_avoidance_bias = -int(80 * proximity_scale) # steer left
                     
-                # Emergency Stop if obstacle is critically close
-                if obstacle_filter.cy > (self.height * 0.85):
-                    print("Emergency Stop: Purple obstacle detected within virtual bumper!")
-                    self.robot.drive(0)
-                    return
+        #         # Emergency Stop if obstacle is critically close
+        #         if obstacle_filter.cy > (self.height * 0.85):
+        #             print("Emergency Stop: Purple obstacle detected within virtual bumper!")
+        #             self.robot.drive(0)
+        #             return
         
         # 6. Throttle Management (Base Speed & Speed Dampener)
         base_speed = 0.5 # Default speed
         
-        # Reduce speed if a rival bot (Red) is ahead
-        if rival_filter and rival_filter.cx is not None and rival_filter.cy is not None:
-            # Proximity calculation based on how low (close) the robot centroid is
-            if rival_filter.cy > (self.height * 0.3):
-                proximity_factor = (rival_filter.cy - (self.height * 0.3)) / (self.height * 0.7)
-                # Dampen throttle up to 70% reduction
-                base_speed *= (1.0 - (proximity_factor * 0.7))
-                
+        # # Reduce speed if a rival bot (Red) is ahead
+        # if rival_filter and rival_filter.cx is not None and rival_filter.cy is not None:
+        #     # Proximity calculation based on how low (close) the robot centroid is
+        #     if rival_filter.cy > (self.height * 0.3):
+        #         proximity_factor = (rival_filter.cy - (self.height * 0.3)) / (self.height * 0.7)
+        #         # Dampen throttle up to 70% reduction
+        #         base_speed *= (1.0 - (proximity_factor * 0.7))
+        
+        #########################################################################################################################################################################################
+        obstacle_avoidance_bias = 0 ########################################## remove ###############################################################################################################
         # Adjust target centerline with obstacle avoidance bias
         if calculated_center is not None:
             target_x = calculated_center + obstacle_avoidance_bias

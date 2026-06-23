@@ -45,7 +45,7 @@ class AckermannRobot:
         i2c = busio.I2C(config.STEERING_SERVO_SCL_PIN, config.STEERING_SERVO_SDA_PIN)
         pca = PCA9685(i2c)
         pca.frequency = 50
-        self.steering_servo = servo.Servo(pca.channels[0], min_pulse=4000, max_pulse=28000, actuation_range=270)
+        self.steering_servo = servo.Servo(pca.channels[0], min_pulse=500, max_pulse=2500, actuation_range=270)
 
 
         # initialise PID for steering
@@ -77,7 +77,17 @@ class AckermannRobot:
 
     def adjust_servo(self, angle):
         """
-        adjust the servo from the current position to a new position
+        adjust the servo from the current position to a new position (through addition)
+        value: value between 0 and 270
+        """
+        print(f"before: {self.steering_servo.angle} stuff to add: {angle}")
+        self.steering_servo.angle = angle + self.steering_servo.angle
+        print(f"after: {self.steering_servo.angle}")
+
+
+    def set_servo(self, angle):
+        """
+        Set the servo from the current position to a new position (through hard setting it)
         value: value between 0 and 270
         """
         self.steering_servo.angle = angle
@@ -105,16 +115,29 @@ class AckermannRobot:
     def manual_drive_mode(self):
         print("\n--- Manual Control Activated ---")
         print("Use W/S to drive, A/D to steer, press Q to quit")
+        self.pressed = False
+
         
         def press(key):
             if key == 'w':
                 self.drive(0.3)
+            
             elif key == 's':
                 self.drive(-0.3)
+                
+
             elif key == 'a':
-                self.adjust_servo(-0.15)
+                self.pressed = True
+                while self.pressed:
+                    if self.steering_servo.angle > config.STEERING_MAX_RIGHT - 1:
+                        self.adjust_servo(-0.5)
+
             elif key == 'd':
-                self.adjust_servo(0.15)
+                self.pressed = True
+                while self.pressed:
+                    if self.steering_servo.angle < config.STEERING_MAX_LEFT + 1:
+                        self.adjust_servo(0.5)
+            
             elif key == 'q':
                 print("\nExiting Manual Control...")
                 stop_listening()
@@ -123,6 +146,9 @@ class AckermannRobot:
             # when you lift your finger off the robot stops
             if key in ['w', 's']:
                 self.drive(0)
+            if key in ['a', 'd']:
+                self.pressed = False
+            
 
         # starts the keyboard listener in the terminal
         listen_keyboard(on_press=press, on_release=release)
@@ -139,11 +165,14 @@ def navigate_with_pid(cx, speed=0.5):
 if __name__ == "__main__":
     # Test drive
     robot = AckermannRobot()
-    # robot.manual_drive_mode()
+    robot.manual_drive_mode()
+    # for i in range(85, 210, 1):
+    #     robot.adjust_servo(i)
+    #     sleep(0.05)
     
-    robot.adjust_servo(135)
+    robot.set_servo(210)
     sleep(1)
-    robot.adjust_servo(0)
+    robot.set_servo(config.STEERING_CENTER)
     sleep(1)
 
 

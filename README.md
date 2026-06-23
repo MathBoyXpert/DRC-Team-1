@@ -23,19 +23,10 @@ python3 -m venv ml_env
 
 source ml_env/bin/activate
 
-Traceback (most recent call last):
-  File "/home/fast/DRC-Team-1/Control/ControlThread.py", line 144, in <module>
-    robot.adjust_servo(135)
-    ~~~~~~~~~~~~~~~~~~^^^^^
-  File "/home/fast/DRC-Team-1/Control/ControlThread.py", line 83, in adjust_servo
-    self.steering_servo.angle = angle
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/fast/DRC-Team-1/ml_space/lib/python3.13/site-packages/adafruit_motor/servo.py", line 133, in angle
-    self.fraction = new_angle / self.actuation_range
-    ^^^^^^^^^^^^^
-  File "/home/fast/DRC-Team-1/ml_space/lib/python3.13/site-packages/adafruit_motor/servo.py", line 69, in fraction
-    self._pwm_out.duty_cycle = duty_cycle
-    ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/fast/DRC-Team-1/ml_space/lib/python3.13/site-packages/adafruit_pca9685.py", line 89, in duty_cycle
-    raise ValueError(f"Out of range: value {value} not 0 <= value <= 65,535")
-ValueError: Out of range: value 72129 not 0 <= value <= 65,535
+after: 83.38416958975141
+before: 83.38416958975141 stuff to add: 0.5
+after: 83.38416958975141
+before: 83.38416958975141 stuff to add: 0.5
+after: 83.38416958975141
+
+This is my output why is the stuff to add not being added

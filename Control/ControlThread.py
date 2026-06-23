@@ -103,10 +103,10 @@ class AckermannRobot:
         speed: value between -1 and 1
         """
         if speed > 0:
-            self.drive_motor1.forward(speed)
-            self.drive_motor2.forward(speed)
-        elif speed < 0:
             self.drive_motor1.backward(abs(speed))
+            self.drive_motor2.forward(abs(speed))
+        elif speed < 0:
+            self.drive_motor1.forward(abs(speed))
             self.drive_motor2.backward(abs(speed))
         else:
             self.drive_motor1.stop()
@@ -130,17 +130,12 @@ class AckermannRobot:
             
             elif key == 's':
                 self.drive(-0.3)
-                
 
             elif key == 'a':
-                self.pressed = True
-                while self.pressed:
-                    self.adjust_servo(-0.5)
+                self.adjust_servo(-5)
 
             elif key == 'd':
-                self.pressed = True
-                while self.pressed:
-                    self.adjust_servo(0.5)
+                self.adjust_servo(5)
             
             elif key == 'q':
                 print("\nExiting Manual Control...")
@@ -150,9 +145,7 @@ class AckermannRobot:
             # when you lift your finger off the robot stops
             if key in ['w', 's']:
                 self.drive(0)
-            if key in ['a', 'd']:
-                self.pressed = False
-            
+
 
         # starts the keyboard listener in the terminal
         listen_keyboard(on_press=press, on_release=release)
@@ -169,24 +162,27 @@ def navigate_with_pid(cx, speed=0.5):
 if __name__ == "__main__":
     # Test drive
     robot = AckermannRobot()
+
+
+
     robot.manual_drive_mode()
     # for i in range(85, 210, 1):
     #     robot.adjust_servo(i)
     #     sleep(0.05)
     
-    robot.set_servo(config.STEERING_MAX_LEFT)
-    sleep(1)
-    robot.set_servo(config.STEERING_CENTER)
-    sleep(1)
+    # robot.set_servo(config.STEERING_MAX_LEFT)
+    # sleep(1)
+    # robot.set_servo(config.STEERING_CENTER)
+    # sleep(1)
 
 
 
     # robot.drive(0)
-    # robot.drive_motor1.forward(0.2)
+    # robot.drive_motor1.backward(0.2)
     # sleep(1)
     # robot.drive(0)
-    # robot.drive_motor2.forward(0.2)
+    # robot.drive_motor2.backward(0.2)
     # sleep(1)
-    # robot.drive(0)
+    robot.drive(0)
 
 

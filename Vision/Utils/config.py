@@ -6,11 +6,11 @@ import cv2
 #############################
 # MOTORS
 # left motor
-DRIVE_MOTOR_PWM1 = 19
-DRIVE_MOTOR_DIR1 = 16
+DRIVE_MOTOR_PWM1 = 13
+DRIVE_MOTOR_DIR1 = 5
 
 # right motor
-DRIVE_MOTOR_PWM2 = 18
+DRIVE_MOTOR_PWM2 = 16
 DRIVE_MOTOR_DIR2 = 6
 
 # STEERING SERVO

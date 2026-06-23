@@ -1,7 +1,10 @@
 import sys
-from gpiozero import Servo, PhaseEnableMotor, AngularServo
+from gpiozero import PhaseEnableMotor
 from time import time, sleep
 from sshkeyboard import listen_keyboard, stop_listening
+import busio
+from adafruit_pca9685 import PCA9685
+from adafruit_motor import servo
 
 sys.path.insert(1, "/home/fast/DRC-Team-1/Vision/Utils/") # for the pi
 sys.path.insert(1, "C:/Users/anshg/Downloads/University/DRC/DRC-Team-1/Vision/Utils") # for local dev
@@ -35,11 +38,16 @@ class PID:
 
 class AckermannRobot:
     def __init__(self):
-        # set the hardware by linking them with the pins
+        # set the motor pins
         self.drive_motor1 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
         self.drive_motor2 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR2, config.DRIVE_MOTOR_PWM2)
-        self.steering_servo = AngularServo(config.STEERING_SERVO_PIN, min_angle=0, max_angle=270, min_pulse_width=0.0004, max_pulse_width=0.0028)
         
+        i2c = busio.I2C(config.STEERING_SERVO_SCL_PIN, config.STEERING_SERVO_SDA_PIN)
+        pca = PCA9685(i2c)
+        pca.frequency = 50
+        self.steering_servo = servo.Servo(pca.channels[0], min_pulse=4000, max_pulse=28000, actuation_range=270)
+
+
         # initialise PID for steering
         self.pid = PID()
 
@@ -50,7 +58,7 @@ class AckermannRobot:
         """
         if cx is None:
             # if no line is detected keep steering at the center (aka straight)
-            self.steering_servo.value = config.STEERING_CENTER
+            self.steering_servo.angle = config.STEERING_CENTER
             return
 
         # Calculate PID output
@@ -65,7 +73,7 @@ class AckermannRobot:
         # Constrain to servo limits
         servo_value = max(config.STEERING_MAX_LEFT, min(config.STEERING_MAX_RIGHT, servo_value))
         
-        self.steering_servo.value = servo_value
+        self.steering_servo.angle = servo_value
 
     def adjust_servo(self, angle):
         """
@@ -92,7 +100,7 @@ class AckermannRobot:
     def stop(self):
         self.drive_motor1.stop()
         self.drive_motor2.stop()
-        self.steering_servo.value = config.STEERING_CENTER
+        self.steering_servo.angle = config.STEERING_CENTER
     
     def manual_drive_mode(self):
         print("\n--- Manual Control Activated ---")
@@ -132,12 +140,10 @@ if __name__ == "__main__":
     # Test drive
     robot = AckermannRobot()
     # robot.manual_drive_mode()
-    for i in range(65, 157):
-        robot.adjust_servo(i)
-        sleep(1)
-    sleep(1)
+    
     robot.adjust_servo(135)
     sleep(1)
+    robot.adjust_servo(0)
     sleep(1)
 
 

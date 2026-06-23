@@ -22,34 +22,20 @@ sudo apt install python3-venv -y
 python3 -m venv ml_env
 
 source ml_env/bin/activate
-(ml_space) fast@raspberrypi:~/DRC-Team-1 $ pip install rpi-lgpio
-Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
-Collecting rpi-lgpio
-  Using cached https://www.piwheels.org/simple/rpi-lgpio/rpi_lgpio-0.6-py3-none-any.whl.metadata (2.5 kB)
-Collecting lgpio>=0.1.0.1 (from rpi-lgpio)
-  Using cached lgpio-0.2.2.0.tar.gz (90 kB)
-  Preparing metadata (setup.py) ... done
-Using cached https://www.piwheels.org/simple/rpi-lgpio/rpi_lgpio-0.6-py3-none-any.whl (11 kB)
-Building wheels for collected packages: lgpio
-  DEPRECATION: Building 'lgpio' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'lgpio'. Discussion can be found at https://github.com/pypa/pip/issues/6334
-  Building wheel for lgpio (setup.py) ... error
-  error: subprocess-exited-with-error
-  
-  × python setup.py bdist_wheel did not run successfully.
-  │ exit code: 1
-  ╰─> [8 lines of output]
-      running bdist_wheel
-      running build
-      running build_py
-      running build_ext
-      building '_lgpio' extension
-      swigging lgpio.i to lgpio_wrap.c
-      swig -python -o lgpio_wrap.c lgpio.i
-      error: command 'swig' failed: No such file or directory
-      [end of output]
-  
-  note: This error originates from a subprocess, and is likely not a problem with pip.
-  ERROR: Failed building wheel for lgpio
-  Running setup.py clean for lgpio
-Failed to build lgpio
-ERROR: Failed to build installable wheels for some pyproject.toml based projects (lgpio)
+
+Traceback (most recent call last):
+  File "/home/fast/DRC-Team-1/Control/ControlThread.py", line 144, in <module>
+    robot.adjust_servo(135)
+    ~~~~~~~~~~~~~~~~~~^^^^^
+  File "/home/fast/DRC-Team-1/Control/ControlThread.py", line 83, in adjust_servo
+    self.steering_servo.angle = angle
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fast/DRC-Team-1/ml_space/lib/python3.13/site-packages/adafruit_motor/servo.py", line 133, in angle
+    self.fraction = new_angle / self.actuation_range
+    ^^^^^^^^^^^^^
+  File "/home/fast/DRC-Team-1/ml_space/lib/python3.13/site-packages/adafruit_motor/servo.py", line 69, in fraction
+    self._pwm_out.duty_cycle = duty_cycle
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/fast/DRC-Team-1/ml_space/lib/python3.13/site-packages/adafruit_pca9685.py", line 89, in duty_cycle
+    raise ValueError(f"Out of range: value {value} not 0 <= value <= 65,535")
+ValueError: Out of range: value 72129 not 0 <= value <= 65,535

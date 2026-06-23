@@ -154,6 +154,7 @@ class VisionControlBridge:
         # Adjust target centerline with obstacle avoidance bias
         if calculated_center is not None:
             target_x = calculated_center + obstacle_avoidance_bias
+            print(f"target x: {target_x}")
             # Steer using the Ackermann steering controller
             self.robot.set_steering(target_x)
             self.robot.drive(base_speed)

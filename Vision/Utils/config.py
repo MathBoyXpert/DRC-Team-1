@@ -27,6 +27,21 @@ STEERING_KD = 0.05
 # MANUAL CONTROL CONSTANTS
 MANUAL_SPEED = 0.3
 
+# RACING STATES
+RACING = "RACING" 
+IDLE = "IDLE" 
+FINISHED = "FINISHED" 
+
+# NUM LAPS
+LAP_TOTAL = 3
+# the time to wait before tyring ot count another track completion line 
+TRACK_COMPLETION_LINE_COOLDOWN = 10.0
+
+# the confidence required before an arrow is considered detected
+ARROW_CONFIDENCE = 0.95
+# this dictates how long the arrow over ride should last 
+ARROW_OVER_RIDE_DURATION = 3.0
+
 ############################
 ##### VISION CONSTANTS #####
 ############################

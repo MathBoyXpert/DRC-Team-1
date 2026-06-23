@@ -3,6 +3,7 @@
         "imshow"
     ],
     "python.analysis.extraPaths": [
-        "./Vision/Utils"
+        "./Vision/Utils",
+        "./Vision"
     ]
 }

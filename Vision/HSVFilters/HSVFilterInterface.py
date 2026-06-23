@@ -127,9 +127,9 @@ class HSVFilterInterface(ABC):
         # this finds the new masked frame
         self.Update_Masked_Frame(hsvFrame)
         # this calculates the new contour
-        contour_status = self.Find_Centroid()
+        self.contour_status = self.Find_Centroid()
         # this displays the frame if allowed by the config
-        return self.Display_Masked_Frame(frame, contour_status), contour_status
+        return self.Display_Masked_Frame(frame, self.contour_status), self.contour_status
 
     # updates the current masked frame
     def Update_Masked_Frame(self, hsv_frame):
@@ -179,7 +179,7 @@ class HSVFilterInterface(ABC):
             self.cy = int(M['m01'] / M['m00'])
             
         # a contour of sufficient size was found and a centroid was calculated
-        return True
+        return False
 
     # displays the current masked frame
     def Display_Masked_Frame(self, frame, contour_status): 

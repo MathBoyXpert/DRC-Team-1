@@ -58,6 +58,7 @@ class AckermannRobot:
         """
         if cx is None:
             # if no line is detected keep steering at the center (aka straight)
+            self.curr_angle = config.STEERING_CENTER
             self.steering_servo.angle = config.STEERING_CENTER
             return
 
@@ -71,8 +72,9 @@ class AckermannRobot:
         servo_value = config.STEERING_CENTER + (correction / (config.WIDTH / 2))
         
         # Constrain to servo limits
-        servo_value = max(config.STEERING_MAX_LEFT, min(config.STEERING_MAX_RIGHT, servo_value))
+        servo_value = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, servo_value))
         
+        self.curr_angle = servo_value
         self.steering_servo.angle = servo_value
 
     def adjust_servo(self, angle):
@@ -81,7 +83,8 @@ class AckermannRobot:
         value: value between 0 and 270
         """
         print(f"before: {self.steering_servo.angle} stuff to add: {angle}")
-        self.steering_servo.angle = angle + self.steering_servo.angle
+        self.curr_angle = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, angle + self.steering_servo.angle))
+        self.steering_servo.angle = self.curr_angle
         print(f"after: {self.steering_servo.angle}")
 
 
@@ -90,6 +93,8 @@ class AckermannRobot:
         Set the servo from the current position to a new position (through hard setting it)
         value: value between 0 and 270
         """
+
+        self.curr_angle = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, angle))
         self.steering_servo.angle = angle
 
     def drive(self, speed):
@@ -110,6 +115,7 @@ class AckermannRobot:
     def stop(self):
         self.drive_motor1.stop()
         self.drive_motor2.stop()
+        self.curr_angle = config.STEERING_CENTER
         self.steering_servo.angle = config.STEERING_CENTER
     
     def manual_drive_mode(self):
@@ -129,14 +135,12 @@ class AckermannRobot:
             elif key == 'a':
                 self.pressed = True
                 while self.pressed:
-                    if self.steering_servo.angle > config.STEERING_MAX_RIGHT - 1:
-                        self.adjust_servo(-0.5)
+                    self.adjust_servo(-0.5)
 
             elif key == 'd':
                 self.pressed = True
                 while self.pressed:
-                    if self.steering_servo.angle < config.STEERING_MAX_LEFT + 1:
-                        self.adjust_servo(0.5)
+                    self.adjust_servo(0.5)
             
             elif key == 'q':
                 print("\nExiting Manual Control...")
@@ -170,7 +174,7 @@ if __name__ == "__main__":
     #     robot.adjust_servo(i)
     #     sleep(0.05)
     
-    robot.set_servo(210)
+    robot.set_servo(config.STEERING_MAX_LEFT)
     sleep(1)
     robot.set_servo(config.STEERING_CENTER)
     sleep(1)

@@ -179,7 +179,7 @@ class HSVFilterInterface(ABC):
             self.cy = int(M['m01'] / M['m00'])
             
         # a contour of sufficient size was found and a centroid was calculated
-        return False
+        return True
 
     # displays the current masked frame
     def Display_Masked_Frame(self, frame, contour_status): 

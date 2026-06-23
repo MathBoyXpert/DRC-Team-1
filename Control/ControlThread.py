@@ -73,7 +73,7 @@ class AckermannRobot:
         
         # Constrain to servo limits
         servo_value = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, servo_value))
-        
+        print(servo_value)
         self.curr_angle = servo_value
         self.steering_servo.angle = servo_value
 

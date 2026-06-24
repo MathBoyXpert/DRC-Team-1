@@ -51,6 +51,10 @@ class VisionInput:
             # updates the frame
 
             # Perspective Transform
+
+            GRID_SIZE = (6,9)
+            OUTPUT_SQUARE_SIZE = 100
+
             tl = [222, 387]
             bl = [70, 472]
             tr = [400, 380]
@@ -90,6 +94,12 @@ class VisionInput:
     # Should end the Vision Ingestion Thread
     def End_Vision_IO(self): 
         self._ingestion = False
+
+    def perspective_Transform_slider():
+        window_name = "Adjust corners"
+        cv2.namedWindow(window_name)
+
+        pass
 
 class VisionError(Exception):
     pass

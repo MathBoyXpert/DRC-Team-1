@@ -34,6 +34,11 @@ class VisionControlBridge:
         self.arrow_override_start = 0
         self.active_direction = "None"
         
+    def calculate_area(self, filter: HSVFilterInterface):
+        x_area = filter.w - filter.x
+        y_area = filter.h - filter.y
+        return x_area * y_area
+
     # looks at the filters reciveved from the vision pipeline and then performs the logic
     def process_and_act(self, HSVManager: Dict[str, HSVFilterInterface], arrow_direction, arrow_confidence):
         # base case where the bot has finished driving and is done
@@ -115,12 +120,13 @@ class VisionControlBridge:
             elif cx_yellow is not None:
                 print(f"This is the yellow cx: {cx_yellow}, and the blue cx is: NONE")
                 # Left line only (Hence turn right)
-                calculated_center = cx_yellow + self.lane_offset
+                calculated_center = 320 - self.lane_offset
             elif cx_blue is not None:
                 print(f"This is the blue cx: {cx_blue}, and the yellow cx is: NONE")
                 # Right line only (Hence turn left)
-                calculated_center = cx_blue - self.lane_offset
+                calculated_center = 320 + self.lane_offset
             
+
             
                 
         # # 5. Obstacle Avoidance Overlay (Purple Hurdles)

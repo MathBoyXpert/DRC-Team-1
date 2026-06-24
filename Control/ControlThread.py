@@ -66,15 +66,13 @@ class AckermannRobot:
         # Calculate PID output
         # correction should be 0-config.WIDTH as well so 0-640
         correction = self.pid.update(cx)
+        print(f"The current PID correction pixel is: {correction}")
+
         # ensuring the correction size is valid
-        if (correction // 1) not in range(0, config.WIDTH):
-            print(f"The current PID correction pixel is: {correction}, NOTE THE MAX SHOULD BE 0-{config.WIDTH}, temporarily scaling the correction...")
-            correction = max(0, min(config.WIDTH, correction))
+        # if (correction // 1) not in range(0, config.WIDTH):
+        #     print(f"The current PID correction pixel is: {correction}, NOTE THE MAX SHOULD BE 0-{config.WIDTH}, temporarily scaling the correction...")
+        #     correction = max(0, min(config.WIDTH, correction))
             
-        # Map correction to servo range [-1, 1]
-        # mapping correction to the servo angle
-        # correction: [-320, 320]
-        correction = correction - (config.WIDTH / 2)
         # correction: [-1,1]
         correction = correction / (config.WIDTH / 2)
         

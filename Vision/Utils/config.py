@@ -22,7 +22,7 @@ STEERING_CENTER = int((STEERING_MAX_LEFT + STEERING_MAX_RIGHT) / 2)
 STEERING_MAX_ANGLE = (STEERING_MAX_LEFT - STEERING_MAX_RIGHT) / 2   # this is the max angle the servo can turn from what we think center is
  
 # PID CONSTANTS
-STEERING_KP = -10
+STEERING_KP = -5
 STEERING_KI = 0.0
 STEERING_KD = 0.0
 
@@ -157,8 +157,8 @@ Display_Bounding_Box = {
 Minimum_Contour_Size = {
     OBSTACLE_HSV: 0,
     TRACK_COMPLETION_HSV: 0,
-    BLUE_TRACK_LINES_HSV: 75,
-    YELLOW_TRACK_LINES_HSV: 75,
+    BLUE_TRACK_LINES_HSV: 350,
+    YELLOW_TRACK_LINES_HSV: 350,
     RIVAL_BOT_HSV: 0,
     ARROW_HSV: 0
 }

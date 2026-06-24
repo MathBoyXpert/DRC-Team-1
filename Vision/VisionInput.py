@@ -25,6 +25,8 @@ class VisionInput:
             import cv2
             print("Vision Object created - THIS SHOULD NEVER APPEAR TWICE IN DEBUGGING OUTPUTS")
             cls._video_capture = cv2.VideoCapture(config.VIDEO_INPUT)
+            cls._video_capture.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
+            cls._video_capture.set(cv2.CAP_PROP_EXPOSURE, -5)
         return cls._instance
 
     # allows someone calling this object to get the same vision object

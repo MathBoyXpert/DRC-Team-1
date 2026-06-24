@@ -6,5 +6,6 @@
         "./Vision/Utils",
         "./Vision",
         "./Control/"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }

@@ -48,7 +48,7 @@ class VisionInput:
             time.sleep(config.TARGET_FPS)
             good, frame = self._video_capture.read()
             # checks for a bad video read
-            if not good:
+            if not good or frame is None:
                 print("Error: Can't receive frame. Exiting...")
                 raise VisionError("The vision object could not produce a good frame")
 

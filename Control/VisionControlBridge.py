@@ -10,11 +10,11 @@ sys.path.insert(1, "/home/fast/DRC-Team-1/Vision/Utils/") # for the pi
 sys.path.insert(1, "C:/Users/anshg/Downloads/University/DRC/DRC-Team-1/Vision/Utils/") # for local dev
 import config
 from HSVFilters.HSVFilterInterface import HSVFilterInterface
-
+from ControlThread import AckermannRobot
 # Mocking config/dependencies for presentation. 
 # In production, import from Vision.Utils.config and Control.ControlThread.
 class VisionControlBridge:
-    def __init__(self, robot_controller):
+    def __init__(self, robot_controller: AckermannRobot):
         self.robot = robot_controller
         self.width = config.WIDTH
         self.height = config.HEIGHT 
@@ -109,16 +109,18 @@ class VisionControlBridge:
         else:
             # Standard line following
             if cx_yellow is not None and cx_blue is not None:
-                # Both boundaries visible
+                # Both lines are visible
+                print(f"yellow cx: {cx_yellow}, blue cx: {cx_blue}")
                 calculated_center = (cx_yellow + cx_blue) // 2
             elif cx_yellow is not None:
-                # Left line only (bend to the right)
+                print(f"This is the yellow cx: {cx_yellow}, and the blue cx is: NONE")
+                # Left line only (Hence turn right)
                 calculated_center = cx_yellow + self.lane_offset
             elif cx_blue is not None:
-                # Right line only (bend to the left)
+                print(f"This is the blue cx: {cx_blue}, and the yellow cx is: NONE")
+                # Right line only (Hence turn left)
                 calculated_center = cx_blue - self.lane_offset
             
-            print(f"yellow cx: {cx_yellow}, blue cx: {cx_blue}")
             
                 
         # # 5. Obstacle Avoidance Overlay (Purple Hurdles)

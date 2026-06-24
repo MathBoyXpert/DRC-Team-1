@@ -3,6 +3,7 @@ from gpiozero import PhaseEnableMotor
 from time import time, sleep
 from sshkeyboard import listen_keyboard, stop_listening
 import busio
+import numpy as np
 from adafruit_pca9685 import PCA9685
 from adafruit_motor import servo
 
@@ -54,28 +55,39 @@ class AckermannRobot:
     def set_steering(self, cx):
         """
         Adjust steering angle based on the centroid x-coordinate from vision.
-        cx: Centroid X from track line filter.
+        cx: Centroid X from track line filter (NOTE this must be 0-config.WDITH aka 0-640).
         """
         if cx is None:
             # if no line is detected keep steering at the center (aka straight)
             self.curr_angle = config.STEERING_CENTER
-            self.steering_servo.angle = config.STEERING_CENTER
+            self.steering_servo.angle = self.curr_angle
             return
 
         # Calculate PID output
+        # correction should be 0-config.WIDTH as well so 0-640
         correction = self.pid.update(cx)
-        
+        # ensuring the correction size is valid
+        if (correction // 1) not in range(0, config.WIDTH):
+            print(f"The current PID correction pixel is: {correction}, NOTE THE MAX SHOULD BE 0-{config.WIDTH}, temporarily scaling the correction...")
+            correction = max(0, min(config.WIDTH, servo_value))
+            
         # Map correction to servo range [-1, 1]
-        # PID output needs to be normalized or scaled based on expected error
-        # Assuming cx is 0-640, error is up to 320.
-        # Simple scaling: divide by half width to get a value roughly in [-1, 1]
-        servo_value = config.STEERING_CENTER + (correction / (config.WIDTH / 2))
+        # mapping correction to the servo angle
+        # correction: [-320, 320]
+        correction = correction - (config.WIDTH / 2)
+        # correction: [-1,1]
+        correction = correction / (config.WIDTH / 2)
         
-        # Constrain to servo limits
+        # angle: [-62.5 - 62.5]
+        servo_value = correction * config.STEERING_MAX_ANGLE 
+        # angle: [85-210]
+        servo_value = config.STEERING_CENTER + servo_value
+        # Constrain to servo limits just incase
         servo_value = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, servo_value))
-        print(servo_value)
+        
+        print(f"Current servo angle: {servo_value}")
         self.curr_angle = servo_value
-        self.steering_servo.angle = servo_value
+        self.steering_servo.angle = self.curr_angle
 
     def adjust_servo(self, angle):
         """
@@ -95,7 +107,7 @@ class AckermannRobot:
         """
 
         self.curr_angle = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, angle))
-        self.steering_servo.angle = angle
+        self.steering_servo.angle = self.curr_angle
 
     def drive(self, speed):
         """
@@ -116,7 +128,7 @@ class AckermannRobot:
         self.drive_motor1.stop()
         self.drive_motor2.stop()
         self.curr_angle = config.STEERING_CENTER
-        self.steering_servo.angle = config.STEERING_CENTER
+        self.steering_servo.angle = self.curr_angle
     
     def manual_drive_mode(self):
         print("\n--- Manual Control Activated ---")

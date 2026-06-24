@@ -1,5 +1,53 @@
 import cv2
 
+
+#############################
+##### CONTROL CONSTANTS #####
+#############################
+# MOTORS
+# left motor
+DRIVE_MOTOR_PWM1 = 13
+DRIVE_MOTOR_DIR1 = 5
+
+# right motor
+DRIVE_MOTOR_PWM2 = 16
+DRIVE_MOTOR_DIR2 = 6
+
+# STEERING SERVO
+STEERING_SERVO_SDA_PIN = 2
+STEERING_SERVO_SCL_PIN = 3
+STEERING_MAX_LEFT = 210
+STEERING_MAX_RIGHT = 85
+STEERING_CENTER = int((STEERING_MAX_LEFT + STEERING_MAX_RIGHT) / 2)
+STEERING_MAX_ANGLE = (STEERING_MAX_LEFT - STEERING_MAX_RIGHT) / 2   # this is the max angle the servo can turn from what we think center is
+ 
+# PID CONSTANTS
+STEERING_KP = -10
+STEERING_KI = 0.0
+STEERING_KD = 0.0
+
+# MANUAL CONTROL CONSTANTS
+MANUAL_SPEED = 0.3
+
+# RACING STATES
+RACING = "RACING" 
+IDLE = "IDLE" 
+FINISHED = "FINISHED" 
+
+# NUM LAPS
+LAP_TOTAL = 3
+# the time to wait before tyring ot count another track completion line 
+TRACK_COMPLETION_LINE_COOLDOWN = 10.0
+
+# the confidence required before an arrow is considered detected
+ARROW_CONFIDENCE = 0.95
+# this dictates how long the arrow over ride should last 
+ARROW_OVER_RIDE_DURATION = 3.0
+
+############################
+##### VISION CONSTANTS #####
+############################
+
 # this is for changing the video input (0..*) with the number
 VIDEO_INPUT = 0
 
@@ -10,7 +58,7 @@ ARROW_DETECTION_METHOD = CNN_METHOD
 
 # this tells the program if everything should that is procesed (e.g contours etc) should be displayed tgt
 # this is editable at runtime by pressing 'D'
-DISPLAY_PROCCESSED_OUTPUT = True
+DISPLAY_PROCCESSED_OUTPUT = False
 TARGET_FPS = 1/100
 # run the cnn every nth frame based on the CNN_INFERENCE variable value
 CNN_INFERENCE = 3
@@ -88,12 +136,12 @@ Hsv_Filter_File_Names_Dict = {
 
 # Names for the HSV Filter Files for storage for the filters
 Display_The_Frame = {
-    OBSTACLE_HSV: True,
-    TRACK_COMPLETION_HSV: True,
+    OBSTACLE_HSV: False,
+    TRACK_COMPLETION_HSV: False,
     BLUE_TRACK_LINES_HSV: True,
     YELLOW_TRACK_LINES_HSV: True,
-    RIVAL_BOT_HSV: True,
-    ARROW_HSV: True
+    RIVAL_BOT_HSV: False,
+    ARROW_HSV: False
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -107,10 +155,10 @@ Display_Bounding_Box = {
 }
 
 Minimum_Contour_Size = {
-    OBSTACLE_HSV: 500,
-    TRACK_COMPLETION_HSV: 500,
-    BLUE_TRACK_LINES_HSV: 500,
-    YELLOW_TRACK_LINES_HSV: 500,
-    RIVAL_BOT_HSV: 500,
-    ARROW_HSV: 500
+    OBSTACLE_HSV: 0,
+    TRACK_COMPLETION_HSV: 0,
+    BLUE_TRACK_LINES_HSV: 75,
+    YELLOW_TRACK_LINES_HSV: 75,
+    RIVAL_BOT_HSV: 0,
+    ARROW_HSV: 0
 }

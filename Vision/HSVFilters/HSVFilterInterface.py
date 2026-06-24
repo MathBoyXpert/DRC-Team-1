@@ -105,7 +105,7 @@ class HSVFilterInterface(ABC):
     def HSV_GUI_Adjustments(self):
         # trackbar window constant is the name of the winodw, window normal allows it to be resized
         cv2.namedWindow(self.Get_Filter_GUI_Name(), cv2.WINDOW_NORMAL)
-        cv2.resizeWindow(self.Get_Filter_GUI_Name(), 350, 700)
+        cv2.resizeWindow(self.Get_Filter_GUI_Name(), 600, 700)
 
         # basic function for the trackbar call back, not needed, hence do nothing
         def doNothing(self):
@@ -127,9 +127,9 @@ class HSVFilterInterface(ABC):
         # this finds the new masked frame
         self.Update_Masked_Frame(hsvFrame)
         # this calculates the new contour
-        contour_status = self.Find_Centroid()
+        self.contour_status = self.Find_Centroid()
         # this displays the frame if allowed by the config
-        return self.Display_Masked_Frame(frame, contour_status), contour_status
+        return self.Display_Masked_Frame(frame, self.contour_status), self.contour_status
 
     # updates the current masked frame
     def Update_Masked_Frame(self, hsv_frame):

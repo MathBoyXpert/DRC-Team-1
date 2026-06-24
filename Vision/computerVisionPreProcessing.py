@@ -13,9 +13,21 @@ import numpy as np
 import os
 import Utils.preProccessingUtils as preProccessingUtils
 import time
+import sys
+
+
+sys.path.insert(1, "/home/fast/DRC-Team-1/Control/") # for the pi
+sys.path.insert(1, "C:/Users/anshg/Downloads/University/DRC/DRC-Team-1/Control/") # for local dev
+
+from VisionControlBridge import VisionControlBridge
+from ControlThread import AckermannRobot
+
 
 class vision:
     def __init__(self):
+        self.bot = AckermannRobot()
+        self.VCB = VisionControlBridge(self.bot)
+        
         # the manager allows for editing of the hsv filters
         # loads the filters into memory, so it doesn't have to be retrieved constantly
         self.HSVManager: Dict[str, HSVFilterInterface] = {config.YELLOW_TRACK_LINES_HSV:    YellowTrackLinesHSVFilter(),
@@ -76,6 +88,8 @@ class vision:
             
     def analyse_arrow(self, contour_status, frame):
         arrow_filter = self.HSVManager[config.ARROW_HSV]
+        detected_arrow = None
+        
         
         # this runs template matching
         if config.ARROW_DETECTION_METHOD == config.TEMPLATE_MATCHING_METHOD and contour_status:
@@ -98,14 +112,17 @@ class vision:
             
             # If the match is terrible (e.g., less than 40% confidence), it's probably a shoe or a shadow
             if confidence < 0.4:
-                cv2.putText(frame, f"Arrow: None ({confidence:.2f})", (10, 30), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)  
+                cv2.putText(frame, f"Arrow: None ({confidence:.2f})", (10, 30),  cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)  
+                self.last_direction = "None"
+                self.last_conf = confidence
             elif max_val_left > max_val_right:
-                cv2.putText(frame, f"Arrow: Left ({max_val_left:.2f})", (10, 30), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                cv2.putText(frame, f"Arrow: Left ({max_val_left:.2f})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                self.last_direction = "Left"
+                self.last_conf = max_val_left
             else:
-                cv2.putText(frame, f"Arrow: Right ({max_val_right:.2f})", (10, 30), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                cv2.putText(frame, f"Arrow: Right ({max_val_right:.2f})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                self.last_direction = "Right"
+                self.last_conf = max_val_right
                     
         # run CNN prediction
         if self.modelLoaded and config.ARROW_DETECTION_METHOD == config.CNN_METHOD:
@@ -164,6 +181,8 @@ class vision:
                     
                 # display the curr frame
                 cv2.imshow('Live Video Feed', frame)
+                
+                self.VCB.process_and_act(self.HSVManager, self.last_direction, self.last_conf)
 
             #############################
             ### LIVE DEBUGGING INPUTS ###

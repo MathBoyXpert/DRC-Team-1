@@ -52,6 +52,8 @@ class VisionControlBridge:
         obstacle_filter = HSVManager[config.OBSTACLE_HSV]
         rival_filter = HSVManager[config.RIVAL_BOT_HSV]
         track_completion_filter = HSVManager[config.TRACK_COMPLETION_HSV]
+
+        current_speed = config.BASE_SPEED
         
         # ################# TRACK COMPLETION TRACKING #################
         # # count the number of times youve seen the green the green line as you go around the track
@@ -76,16 +78,31 @@ class VisionControlBridge:
 
         # # checks if the arrow overide should take place right now
         # in_arrow_zone = (time.time() - self.arrow_override_start < config.ARROW_OVER_RIDE_DURATION)
+
+        ################## Obstacle Avoidance Overlay (Purple Hurdles) #################
+        if (obstacle_filter.contour_status):
+            obstacle_x = obstacle_filter.x 
+            obstacle_w = obstacle_filter.w
+            current_speed * config.OBSTACLE_SLOW_FACTOR
+        else: 
+            obstacle_x = None
+            obstacle_w = None
         
         ################# TRACK LINES TRACKING #################
         # gets the positions of the track lines
         # Yellow line position
-        if (yellow_line_filter.contour_status):
+        left_of_obstacle_prefered = None
+        if (obstacle_x is not None and blue_line_filter.contour_status):
+            cx_yellow = obstacle_x
+            left_of_obstacle_prefered = True
+        elif (yellow_line_filter.contour_status):
             cx_yellow = yellow_line_filter.cx 
         else: 
             cx_yellow = None
 
         # Blue line position
+        if (obstacle_w is not None and yellow_line_filter.contour_status and left_of_obstacle_prefered == False):
+            cx_blue = obstacle_w
         if (blue_line_filter.contour_status):
             cx_blue = blue_line_filter.cx 
         else:
@@ -125,11 +142,16 @@ class VisionControlBridge:
                 print(f"This is the blue cx: {cx_blue}, and the yellow cx is: NONE")
                 # Right line only (Hence turn left)
                 calculated_center = 320 + self.lane_offset
-            
 
-            
                 
         # # 5. Obstacle Avoidance Overlay (Purple Hurdles)
+        # if (obstacle_filter.contour_status):
+        #     obstacle_x = obstacle_filter.x 
+        #     obstacle_w = obstacle_filter.w 
+        # else: 
+        #     obstacle_x = None
+        #     obstacle_w = None
+        
         # obstacle_avoidance_bias = 0
         # if obstacle_filter and obstacle_filter.cx is not None and obstacle_filter.cy is not None:
         #     # Only trigger if the obstacle is in the bottom 60% of the frame (close)
@@ -149,9 +171,6 @@ class VisionControlBridge:
         #             self.robot.drive(0)
         #             return
         
-        # 6. Throttle Management (Base Speed & Speed Dampener)
-        base_speed = 0.5 # Default speed
-        
         # # Reduce speed if a rival bot (Red) is ahead
         # if rival_filter and rival_filter.cx is not None and rival_filter.cy is not None:
         #     # Proximity calculation based on how low (close) the robot centroid is
@@ -167,9 +186,7 @@ class VisionControlBridge:
             target_x = calculated_center + obstacle_avoidance_bias
             print(f"target x: {target_x}")
             # Steer using the Ackermann steering controller
-            self.robot.set_steering(target_x)
-            self.robot.drive(base_speed)
+            self.robot.set_steering(target_x, current_speed)
         else:
             # Lane lost fallback: slow down and maintain steering center
-            self.robot.set_steering(self.target_center)
-            self.robot.drive(base_speed * 0.5)
+            self.robot.set_steering(self.target_center, curr_speed=(current_speed * 0.5))

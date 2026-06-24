@@ -13,6 +13,9 @@ DRIVE_MOTOR_DIR1 = 5
 DRIVE_MOTOR_PWM2 = 16
 DRIVE_MOTOR_DIR2 = 6
 
+# base motor speed
+BASE_SPEED = 0.9
+
 # STEERING SERVO
 STEERING_SERVO_SDA_PIN = 2
 STEERING_SERVO_SCL_PIN = 3
@@ -22,9 +25,14 @@ STEERING_CENTER = int((STEERING_MAX_LEFT + STEERING_MAX_RIGHT) / 2)
 STEERING_MAX_ANGLE = (STEERING_MAX_LEFT - STEERING_MAX_RIGHT) / 2   # this is the max angle the servo can turn from what we think center is
  
 # PID CONSTANTS
-STEERING_KP = -5
-STEERING_KI = 0.0
+STEERING_KP = 2
+STEERING_KI = 0.005
 STEERING_KD = 0.0
+PID_CONSTANT_NEEDED_TO_MAX_RIGHT_STEERING_ANGLE = -317.44
+PID_CONSTANT_NEEDED_TO_MAX_LEFT_STEERING_ANGLE = 322.56
+
+# SLOW applied when an obstacle is detected
+OBSTACLE_SLOW_FACTOR = 0.85
 
 # MANUAL CONTROL CONSTANTS
 MANUAL_SPEED = 0.3
@@ -136,13 +144,16 @@ Hsv_Filter_File_Names_Dict = {
 
 # Names for the HSV Filter Files for storage for the filters
 Display_The_Frame = {
-    OBSTACLE_HSV: False,
+    OBSTACLE_HSV: True,
     TRACK_COMPLETION_HSV: False,
     BLUE_TRACK_LINES_HSV: True,
     YELLOW_TRACK_LINES_HSV: True,
     RIVAL_BOT_HSV: False,
     ARROW_HSV: False
 }
+
+# this determines if the polynomial fits should be displayed
+DISPLAY_POLYNOMIAL = False
 
 # Names for the HSV Filter Files for storage for the filters
 Display_Bounding_Box = {

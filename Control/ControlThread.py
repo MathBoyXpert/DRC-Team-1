@@ -40,8 +40,8 @@ class PID:
 class AckermannRobot:
     def __init__(self):
         # set the motor pins
-        self.drive_motor1 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
-        self.drive_motor2 = PhaseEnableMotor(config.DRIVE_MOTOR_DIR2, config.DRIVE_MOTOR_PWM2)
+        self.drive_motor_left = PhaseEnableMotor(config.DRIVE_MOTOR_DIR1, config.DRIVE_MOTOR_PWM1)
+        self.drive_motor_right = PhaseEnableMotor(config.DRIVE_MOTOR_DIR2, config.DRIVE_MOTOR_PWM2)
         
         i2c = busio.I2C(config.STEERING_SERVO_SCL_PIN, config.STEERING_SERVO_SDA_PIN)
         pca = PCA9685(i2c)
@@ -52,7 +52,7 @@ class AckermannRobot:
         # initialise PID for steering
         self.pid = PID()
 
-    def set_steering(self, cx):
+    def set_steering(self, cx, curr_speed):
         """
         Adjust steering angle based on the centroid x-coordinate from vision.
         cx: Centroid X from track line filter (NOTE this must be 0-config.WDITH aka 0-640).
@@ -64,28 +64,34 @@ class AckermannRobot:
             return
 
         # Calculate PID output
-        # correction should be 0-config.WIDTH as well so 0-640
-        correction = self.pid.update(cx)
-        print(f"The current PID correction pixel is: {correction}")
+        og_correction = self.pid.update(cx)
+        print(f"The current PID correction pixel is: {og_correction}")
 
-        # ensuring the correction size is valid
-        # if (correction // 1) not in range(0, config.WIDTH):
-        #     print(f"The current PID correction pixel is: {correction}, NOTE THE MAX SHOULD BE 0-{config.WIDTH}, temporarily scaling the correction...")
-        #     correction = max(0, min(config.WIDTH, correction))
-            
-        # correction: [-1,1]
-        correction = correction / (config.WIDTH / 2)
+        correction = og_correction / (config.WIDTH / 2)
         
-        # angle: [-62.5 - 62.5]
         servo_value = correction * config.STEERING_MAX_ANGLE 
-        # angle: [85-210]
         servo_value = config.STEERING_CENTER + servo_value
+        # angle: [85-210]
         # Constrain to servo limits just incase
         servo_value = max(config.STEERING_MAX_RIGHT, min(config.STEERING_MAX_LEFT, servo_value))
         
         print(f"Current servo angle: {servo_value}")
         self.curr_angle = servo_value
         self.steering_servo.angle = self.curr_angle
+
+        # activate differnetial steering if the turn is even sharper if unable to make the turn
+        if og_correction < config.PID_CONSTANT_NEEDED_TO_MAX_RIGHT_STEERING_ANGLE:
+            print("Right Correction Differential Activated!!")
+            self.drive_motor_right.forward(config.BASE_SPEED)
+            self.drive_motor_left.forward(config.BASE_SPEED)
+        elif og_correction > config.PID_CONSTANT_NEEDED_TO_MAX_LEFT_STEERING_ANGLE:
+            print("Left Correction Differential Activated!!")
+            self.drive_motor_left.backward(config.BASE_SPEED)
+            self.drive_motor_right.backward(config.BASE_SPEED)
+        else:
+            print("Differential Dectivated..")
+            self.drive(config.BASE_SPEED)
+
 
     def adjust_servo(self, angle):
         """
@@ -113,18 +119,18 @@ class AckermannRobot:
         speed: value between -1 and 1
         """
         if speed > 0:
-            self.drive_motor1.backward(abs(speed))
-            self.drive_motor2.forward(abs(speed))
+            self.drive_motor_left.backward(abs(speed))
+            self.drive_motor_right.forward(abs(speed))
         elif speed < 0:
-            self.drive_motor1.forward(abs(speed))
-            self.drive_motor2.backward(abs(speed))
+            self.drive_motor_left.forward(abs(speed))
+            self.drive_motor_right.backward(abs(speed))
         else:
-            self.drive_motor1.stop()
-            self.drive_motor2.stop()
+            self.drive_motor_left.stop()
+            self.drive_motor_right.stop()
 
     def stop(self):
-        self.drive_motor1.stop()
-        self.drive_motor2.stop()
+        self.drive_motor_left.stop()
+        self.drive_motor_right.stop()
         self.curr_angle = config.STEERING_CENTER
         self.steering_servo.angle = self.curr_angle
     

@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import os
+import Utils.config as config
 
 class TrackLinesFilter:
     def find_lane_pixels(self, frame, window_name):
@@ -75,7 +76,9 @@ class TrackLinesFilter:
             fit = np.polyfit(all_y, all_x, 2)
             self.detect_polynomial(msk, fit, frame.shape[0])
         
-        cv2.imshow(window_name, msk)
+        # if the config allws you to display the fitted polynomial, display it
+        if config.DISPLAY_POLYNOMIAL:
+            cv2.imshow(window_name, msk)
 
         #Returns the mask and the curve fit
         return msk, fit, x_base

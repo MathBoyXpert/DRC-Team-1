@@ -24,7 +24,12 @@ class VisionInput:
             import Utils.config as config
             import cv2
             print("Vision Object created - THIS SHOULD NEVER APPEAR TWICE IN DEBUGGING OUTPUTS")
-            cls._video_capture = cv2.VideoCapture(config.VIDEO_INPUT)
+            cls._video_capture = cv2.VideoCapture(config.VIDEO_INPUT + cv2.CAP_MSMF)
+            cls._video_capture.set(cv2.CAP_PROP_FOURCC, 50)
+            cls._video_capture.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+            
+            cls._video_capture.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+            cls._video_capture.set(cv2.CAP_PROP_EXPOSURE, -5.5) 
         return cls._instance
 
     # allows someone calling this object to get the same vision object

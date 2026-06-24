@@ -148,8 +148,8 @@ Display_The_Frame = {
 Display_Bounding_Box = {
     OBSTACLE_HSV: True,
     TRACK_COMPLETION_HSV: True,
-    BLUE_TRACK_LINES_HSV: False,
-    YELLOW_TRACK_LINES_HSV: False,
+    BLUE_TRACK_LINES_HSV: True,
+    YELLOW_TRACK_LINES_HSV: True,
     RIVAL_BOT_HSV: True,
     ARROW_HSV: True
 }

@@ -10,8 +10,8 @@ visionInput = VisionInput()
 visionInput.Start_Vision_IO()
 time.sleep(2)
 
-preprocessing = vision()
+vision_system = vision()
 
-preprocessing.mainLoop()
+vision_system.mainLoop()
 
 visionInput.End_Vision_IO()

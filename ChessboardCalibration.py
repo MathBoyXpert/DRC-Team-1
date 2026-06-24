@@ -5,7 +5,7 @@ import numpy as np
 GRID_SIZE = (6,9)
 # Size of each chessboard square from birds-eye view in pixels
 OUTPUT_SQUARE_SIZE = 100
-STARTING_POINT = np.float32([500,500])
+STARTING_POINT = np.float32([1000,1000])
 BOARD_FILE_PATH = "chessboard.jpg"
 
 chessboardCaptured = False
@@ -39,17 +39,17 @@ if chessboardCaptured:
         cv2.imshow("Corners found", annotatedImg)
         corner = corners.reshape(-1, 2)
         tl = corners[0]
-        tr = corners[GRID_SIZE[1] - 1]
-        bl = corners[-GRID_SIZE[1]]
+        tr = corners[GRID_SIZE[0] - 1]
+        bl = corners[-GRID_SIZE[0]]
         br = corners[-1]
         src_pts = np.float32([tl, tr, br, bl])
 
         tl1 = STARTING_POINT
-        tr1 = STARTING_POINT + np.float32([GRID_SIZE[0]*OUTPUT_SQUARE_SIZE, 0])
-        br1 = STARTING_POINT + np.float32([GRID_SIZE[0]*OUTPUT_SQUARE_SIZE, GRID_SIZE[1]*OUTPUT_SQUARE_SIZE])
-        bl1 = STARTING_POINT + np.float32([0, GRID_SIZE[1]*OUTPUT_SQUARE_SIZE])
+        tr1 = STARTING_POINT + np.float32([0, GRID_SIZE[0]*OUTPUT_SQUARE_SIZE])
+        br1 = STARTING_POINT + np.float32([GRID_SIZE[1]*OUTPUT_SQUARE_SIZE, GRID_SIZE[0]*OUTPUT_SQUARE_SIZE])
+        bl1 = STARTING_POINT + np.float32([GRID_SIZE[1]*OUTPUT_SQUARE_SIZE, 0])
 
-        dst_pts = np.float32([tl1, tr1, br1, bl1])
+        dst_pts = np.float32([br1, bl1, tl1, tr1])
         M = cv2.getPerspectiveTransform(src_pts, dst_pts)
         cornerPts = np.float32([[0,0], [1920, 0], [1920, 1080], [0, 1080]])
         cornerPtsReshaped = np.reshape(cornerPts, (-1, 1, 2))
@@ -64,7 +64,7 @@ if chessboardCaptured:
             print(boundingBox)
             warpedImg = cv2.warpPerspective(frame, M, boundingBox)
             # warpedImg = cv2.rotate(warpedImg, cv2.ROTATE_90_CLOCKWISE)
-            cv2.imshow("Perspective Warp", warpedImg)
+            cv2.imshow("Perspective Warp", cv2.resize(warpedImg, None, fx=0.25, fy=0.25))
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 

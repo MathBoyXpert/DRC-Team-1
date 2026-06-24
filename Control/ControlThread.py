@@ -69,7 +69,7 @@ class AckermannRobot:
         # ensuring the correction size is valid
         if (correction // 1) not in range(0, config.WIDTH):
             print(f"The current PID correction pixel is: {correction}, NOTE THE MAX SHOULD BE 0-{config.WIDTH}, temporarily scaling the correction...")
-            correction = max(0, min(config.WIDTH, servo_value))
+            correction = max(0, min(config.WIDTH, correction))
             
         # Map correction to servo range [-1, 1]
         # mapping correction to the servo angle

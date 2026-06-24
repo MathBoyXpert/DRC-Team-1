@@ -22,7 +22,7 @@ STEERING_CENTER = int((STEERING_MAX_LEFT + STEERING_MAX_RIGHT) / 2)
 STEERING_MAX_ANGLE = (STEERING_MAX_LEFT - STEERING_MAX_RIGHT) / 2   # this is the max angle the servo can turn from what we think center is
  
 # PID CONSTANTS
-STEERING_KP = 0.5
+STEERING_KP = -10
 STEERING_KI = 0.0
 STEERING_KD = 0.0
 
@@ -58,7 +58,7 @@ ARROW_DETECTION_METHOD = CNN_METHOD
 
 # this tells the program if everything should that is procesed (e.g contours etc) should be displayed tgt
 # this is editable at runtime by pressing 'D'
-DISPLAY_PROCCESSED_OUTPUT = True
+DISPLAY_PROCCESSED_OUTPUT = False
 TARGET_FPS = 1/100
 # run the cnn every nth frame based on the CNN_INFERENCE variable value
 CNN_INFERENCE = 3
@@ -136,12 +136,12 @@ Hsv_Filter_File_Names_Dict = {
 
 # Names for the HSV Filter Files for storage for the filters
 Display_The_Frame = {
-    OBSTACLE_HSV: True,
-    TRACK_COMPLETION_HSV: True,
+    OBSTACLE_HSV: False,
+    TRACK_COMPLETION_HSV: False,
     BLUE_TRACK_LINES_HSV: True,
     YELLOW_TRACK_LINES_HSV: True,
-    RIVAL_BOT_HSV: True,
-    ARROW_HSV: True
+    RIVAL_BOT_HSV: False,
+    ARROW_HSV: False
 }
 
 # Names for the HSV Filter Files for storage for the filters
@@ -157,8 +157,8 @@ Display_Bounding_Box = {
 Minimum_Contour_Size = {
     OBSTACLE_HSV: 0,
     TRACK_COMPLETION_HSV: 0,
-    BLUE_TRACK_LINES_HSV: 0,
-    YELLOW_TRACK_LINES_HSV: 0,
+    BLUE_TRACK_LINES_HSV: 75,
+    YELLOW_TRACK_LINES_HSV: 75,
     RIVAL_BOT_HSV: 0,
     ARROW_HSV: 0
 }

@@ -16,17 +16,17 @@ import time
 import sys
 
 
-# sys.path.insert(1, "/home/fast/DRC-Team-1/Control/") # for the pi
-# sys.path.insert(1, "C:/Users/anshg/Downloads/University/DRC/DRC-Team-1/Control/") # for local dev
+sys.path.insert(1, "/home/fast/DRC-Team-1/Control/") # for the pi
+sys.path.insert(1, "C:/Users/anshg/Downloads/University/DRC/DRC-Team-1/Control/") # for local dev
 
-# from VisionControlBridge import VisionControlBridge
-# from ControlThread import AckermannRobot
+from VisionControlBridge import VisionControlBridge
+from ControlThread import AckermannRobot
 
 
 class vision:
     def __init__(self):
-        # self.bot = AckermannRobot()
-        # self.VCB = VisionControlBridge(self.bot)
+        self.bot = AckermannRobot()
+        self.VCB = VisionControlBridge(self.bot)
         
         # the manager allows for editing of the hsv filters
         # loads the filters into memory, so it doesn't have to be retrieved constantly
@@ -182,7 +182,7 @@ class vision:
                 # display the curr frame
                 cv2.imshow('Live Video Feed', frame)
                 
-                # self.VCB.process_and_act(self.HSVManager, self.last_direction, self.last_conf)
+                self.VCB.process_and_act(self.HSVManager, self.last_direction, self.last_conf)
 
             #############################
             ### LIVE DEBUGGING INPUTS ###

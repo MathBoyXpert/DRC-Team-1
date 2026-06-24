@@ -55,23 +55,37 @@ class VisionInput:
             bl = [70, 472]
             tr = [400, 380]
             br = [538, 472]
+            # Assume these are the 4 corner points of the object you selected in your 1080p image
+            # [Top-Left, Top-Right, Bottom-Right, Bottom-Left]
+            src_pts = np.float32([tl, tr, br, bl])
 
-            cv2.circle(frame, tl, 5, (0,0, 255), -1)
-            cv2.circle(frame, bl, 5, (0,0, 255), -1)
-            cv2.circle(frame, tr, 5, (0,0, 255), -1)
-            cv2.circle(frame, br, 5, (0,0, 255), -1)
+            (tl, tr, br, bl) = src_pts
 
-            pts1 = np.array([tl, bl, tr, br], dtype=np.float32)
-            pts2 = np.array([[0, 0], [0, config.HEIGHT], [config.WIDTH, 0], [config.WIDTH, config.HEIGHT]], dtype=np.float32)
+            # 1. Calculate the maximum width
+            # Distance between Bottom-Right & Bottom-Left, and Top-Right & Top-Left
+            width_bottom = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+            width_top = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+            max_width = max(int(width_bottom), int(width_top))
 
-            matrix = cv2.getPerspectiveTransform(pts1, pts2)
-            transformed_frame = cv2.warpPerspective(frame, matrix, (config.WIDTH, config.HEIGHT))
-            # print(f'Frame type: {type(frame)}')
-            # cv2.imshow("Transformed frame", transformed_frame)
-            # time.sleep(3)
-            # cv2.destroyAllWindows()
+            # 2. Calculate the maximum height
+            # Distance between Top-Right & Bottom-Right, and Top-Left & Bottom-Left
+            height_right = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+            height_left = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+            max_height = max(int(height_right), int(height_left))
+
+            # 3. Use these maximums for your destination points
+            dst_pts = np.float32([
+                [0, 0],
+                [max_width - 1, 0],
+                [max_width - 1, max_height - 1],
+                [0, max_height - 1]
+            ])
+
+            # 4. Pass them directly to the warp function
+            M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+            warped_image = cv2.warpPerspective(frame, M, (max_width, max_height))
             
-            self._curr_frame = transformed_frame;
+            self._curr_frame = warped_image;
             self._frame_no += 1
 
         print("Ending Frame Ingestion....")

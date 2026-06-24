@@ -2,6 +2,7 @@ import Utils.config as config
 import cv2
 import threading
 import time
+import numpy as np
 class VisionInput:
     _instance = None
     _video_capture = None
@@ -48,7 +49,29 @@ class VisionInput:
                 raise VisionError("The vision object could not produce a good frame")
 
             # updates the frame
-            self._curr_frame = frame;
+
+            # Perspective Transform
+            tl = [222, 387]
+            bl = [70, 472]
+            tr = [400, 380]
+            br = [538, 472]
+
+            cv2.circle(frame, tl, 5, (0,0, 255), -1)
+            cv2.circle(frame, bl, 5, (0,0, 255), -1)
+            cv2.circle(frame, tr, 5, (0,0, 255), -1)
+            cv2.circle(frame, br, 5, (0,0, 255), -1)
+
+            pts1 = np.array([tl, bl, tr, br], dtype=np.float32)
+            pts2 = np.array([[0, 0], [0, config.HEIGHT], [config.WIDTH, 0], [config.WIDTH, config.HEIGHT]], dtype=np.float32)
+
+            matrix = cv2.getPerspectiveTransform(pts1, pts2)
+            transformed_frame = cv2.warpPerspective(frame, matrix, (config.WIDTH, config.HEIGHT))
+            # print(f'Frame type: {type(frame)}')
+            # cv2.imshow("Transformed frame", transformed_frame)
+            # time.sleep(3)
+            # cv2.destroyAllWindows()
+            
+            self._curr_frame = transformed_frame;
             self._frame_no += 1
 
         print("Ending Frame Ingestion....")

@@ -55,20 +55,20 @@ class VisionControlBridge:
 
         current_speed = config.BASE_SPEED
         
-        # ################# TRACK COMPLETION TRACKING #################
-        # # count the number of times youve seen the green the green line as you go around the track
-        # if track_completion_filter.contour_status:
-        #     # avoids double counting a single track completion line with a cooldown
-        #     if time.time() - self.finish_line_cooldown > config.TRACK_COMPLETION_LINE_COOLDOWN:
-        #         self.current_lap += 1
-        #         self.finish_line_cooldown = time.time()
-        #         print(f"Lap {self.current_lap}/{self.total_laps} completed!")
+        ################# TRACK COMPLETION TRACKING #################
+        # count the number of times youve seen the green the green line as you go around the track
+        if track_completion_filter.contour_status:
+            # avoids double counting a single track completion line with a cooldown
+            if time.time() - self.finish_line_cooldown > config.TRACK_COMPLETION_LINE_COOLDOWN:
+                self.current_lap += 1
+                self.finish_line_cooldown = time.time()
+                print(f"Lap {self.current_lap}/{self.total_laps} completed!")
                 
-        #         if self.current_lap >= self.total_laps:
-        #             print("Finished the final lap. Stopping for -5s bonus")
-        #             self.state = config.FINISHED
-        #             self.robot.stop()
-        #             return
+                if self.current_lap >= self.total_laps:
+                    print("Finished the final lap. Stopping for -5s bonus")
+                    self.state = config.FINISHED
+                    self.robot.stop()
+                    return
         
         # ################# ARROW DETECTION TRACKING #################
         # # this tracks the arrow HSV filter for a potential turning challenge
@@ -91,18 +91,18 @@ class VisionControlBridge:
         ################# TRACK LINES TRACKING #################
         # gets the positions of the track lines
         # Yellow line position
-        left_of_obstacle_prefered = None
-        if (obstacle_x is not None and blue_line_filter.contour_status):
-            cx_yellow = obstacle_x
-            left_of_obstacle_prefered = True
-        elif (yellow_line_filter.contour_status):
+        # left_of_obstacle_prefered = None
+        # if (obstacle_x is not None and blue_line_filter.contour_status):
+        #     cx_yellow = obstacle_x
+        #     left_of_obstacle_prefered = True
+        if (yellow_line_filter.contour_status):
             cx_yellow = yellow_line_filter.cx 
         else: 
             cx_yellow = None
 
         # Blue line position
-        if (obstacle_w is not None and yellow_line_filter.contour_status and left_of_obstacle_prefered == False):
-            cx_blue = obstacle_w
+        # if (obstacle_w is not None and yellow_line_filter.contour_status and left_of_obstacle_prefered == False):
+        #     cx_blue = obstacle_w
         if (blue_line_filter.contour_status):
             cx_blue = blue_line_filter.cx 
         else:

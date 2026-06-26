@@ -22,7 +22,7 @@ class VisionControlBridge:
         
         # Lane fallback offset (half of typical track width in pixels)
         # this is for when only one lane is detected!
-        self.lane_offset = 180 
+        self.lane_offset = 320 
         
         # states and counters for the bot
         self.state = config.RACING # IDLE, RACING, FINISHED
@@ -70,14 +70,14 @@ class VisionControlBridge:
                     self.robot.stop()
                     return
         
-        # ################# ARROW DETECTION TRACKING #################
-        # # this tracks the arrow HSV filter for a potential turning challenge
-        # if arrow_direction in ["Left", "Right"] and arrow_confidence > config.ARROW_CONFIDENCE:
-        #     self.active_direction = arrow_direction
-        #     self.arrow_override_start = time.time()
+        ################# ARROW DETECTION TRACKING #################
+        # this tracks the arrow HSV filter for a potential turning challenge
+        if arrow_direction in ["Left", "Right"] and arrow_confidence > config.ARROW_CONFIDENCE:
+            self.active_direction = arrow_direction
+            self.arrow_override_start = time.time()
 
-        # # checks if the arrow overide should take place right now
-        # in_arrow_zone = (time.time() - self.arrow_override_start < config.ARROW_OVER_RIDE_DURATION)
+        # checks if the arrow overide should take place right now
+        in_arrow_zone = (time.time() - self.arrow_override_start < config.ARROW_OVER_RIDE_DURATION)
 
         ################## Obstacle Avoidance Overlay (Purple Hurdles) #################
         if (obstacle_filter.contour_status):
@@ -120,7 +120,7 @@ class VisionControlBridge:
                     calculated_center = cx_yellow + (self.lane_offset * 0.7)
                 else:
                     # Hard-steer left if we lost track of the line
-                    calculated_center = self.target_center - 100
+                    calculated_center = self.target_center - self.lane_offset
             elif self.active_direction == "Right":
                 if cx_blue is not None:
                     # Steer strictly matching the right line path with offset bias
@@ -137,11 +137,11 @@ class VisionControlBridge:
             elif cx_yellow is not None:
                 print(f"This is the yellow cx: {cx_yellow}, and the blue cx is: NONE")
                 # Left line only (Hence turn right)
-                calculated_center = 320 - self.lane_offset
+                calculated_center = 320 + self.lane_offset
             elif cx_blue is not None:
                 print(f"This is the blue cx: {cx_blue}, and the yellow cx is: NONE")
                 # Right line only (Hence turn left)
-                calculated_center = 320 + self.lane_offset
+                calculated_center = 320 - self.lane_offset
 
                 
         # # 5. Obstacle Avoidance Overlay (Purple Hurdles)

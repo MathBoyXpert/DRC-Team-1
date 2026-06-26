@@ -82,12 +82,12 @@ class AckermannRobot:
         # activate differnetial steering if the turn is even sharper if unable to make the turn
         if og_correction < config.PID_CONSTANT_NEEDED_TO_MAX_RIGHT_STEERING_ANGLE:
             print("Right Correction Differential Activated!!")
-            self.drive_motor_right.forward(config.BASE_SPEED)
-            self.drive_motor_left.forward(config.BASE_SPEED)
+            self.drive_motor_right.forward(config.DIFFERNETIAL_SPEED)
+            self.drive_motor_left.forward(config.DIFFERNETIAL_SPEED)
         elif og_correction > config.PID_CONSTANT_NEEDED_TO_MAX_LEFT_STEERING_ANGLE:
             print("Left Correction Differential Activated!!")
-            self.drive_motor_left.backward(config.BASE_SPEED)
-            self.drive_motor_right.backward(config.BASE_SPEED)
+            self.drive_motor_left.backward(config.DIFFERNETIAL_SPEED)
+            self.drive_motor_right.backward(config.DIFFERNETIAL_SPEED)
         else:
             print("Differential Dectivated..")
             self.drive(config.BASE_SPEED)
@@ -186,19 +186,20 @@ if __name__ == "__main__":
     #     robot.adjust_servo(i)
     #     sleep(0.05)
     
-    # robot.set_servo(config.STEERING_MAX_LEFT)
-    # sleep(1)
-    # robot.set_servo(config.STEERING_CENTER)
-    # sleep(1)
+    robot.set_servo(config.STEERING_MAX_LEFT)
+    sleep(1)
+    robot.set_servo(config.STEERING_MAX_RIGHT)
+    sleep(1)
 
 
 
-    # robot.drive(0)
-    # robot.drive_motor1.backward(0.2)
-    # sleep(1)
-    # robot.drive(0)
-    # robot.drive_motor2.backward(0.2)
-    # sleep(1)
+
+    robot.drive(0)
+    robot.drive_motor_left.backward(0.2)
+    sleep(1)
+    robot.drive(0)
+    robot.drive_motor_right.backward(0.2)
+    sleep(1)
     robot.drive(0)
 
 

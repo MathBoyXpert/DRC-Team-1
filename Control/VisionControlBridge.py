@@ -109,6 +109,7 @@ class VisionControlBridge:
             cx_blue = None
         
         # Calculating the center position that should be used for pid
+        in_arrow_zone = False
         calculated_center = None
         if in_arrow_zone:
             # follow only the inner boundary of the fork to stay on path
@@ -187,4 +188,4 @@ class VisionControlBridge:
             self.robot.set_steering(target_x, current_speed, in_arrow_zone)
         else:
             # Lane lost fallback: slow down and maintain steering center
-            self.robot.set_steering(self.target_center, curr_speed=(current_speed * 0.5))
+            self.robot.set_steering(self.target_center, curr_speed=(current_speed * 0.5), in_arrow_zone=in_arrow_zone)

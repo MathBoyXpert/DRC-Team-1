@@ -149,6 +149,7 @@ class vision:
         return frame
 
     def mainLoop(self):
+        
         # captures the video input frame by frame
         while True:
             # this displays the masked version of the current frame for each HSV Filter

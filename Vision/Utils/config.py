@@ -150,12 +150,12 @@ Hsv_Filter_File_Names_Dict = {
 
 # Names for the HSV Filter Files for storage for the filters
 Display_The_Frame = {
-    OBSTACLE_HSV: True,
+    OBSTACLE_HSV: False,
     TRACK_COMPLETION_HSV: False,
-    BLUE_TRACK_LINES_HSV: True,
-    YELLOW_TRACK_LINES_HSV: True,
+    BLUE_TRACK_LINES_HSV: False,
+    YELLOW_TRACK_LINES_HSV: False,
     RIVAL_BOT_HSV: False,
-    ARROW_HSV: False
+    ARROW_HSV: True
 }
 
 # this determines if the polynomial fits should be displayed

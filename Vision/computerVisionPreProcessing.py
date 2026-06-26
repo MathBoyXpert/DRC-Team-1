@@ -149,6 +149,7 @@ class vision:
         return frame
 
     def mainLoop(self):
+        
         # captures the video input frame by frame
         start = False
         while True:

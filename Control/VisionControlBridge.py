@@ -110,21 +110,19 @@ class VisionControlBridge:
         
         # Calculating the center position that should be used for pid
         calculated_center = None
-        ################################################################################################################################################################################################################
-        in_arrow_zone = False #################################################### remove ########################################################################################################
         if in_arrow_zone:
             # follow only the inner boundary of the fork to stay on path
             if self.active_direction == "Left":
                 if cx_yellow is not None:
                     # Steer strictly matching the left line path with offset bias
-                    calculated_center = cx_yellow + (self.lane_offset * 0.7)
+                    calculated_center = cx_yellow - (self.lane_offset * config.ARROW_BIAS)
                 else:
                     # Hard-steer left if we lost track of the line
                     calculated_center = self.target_center - self.lane_offset
             elif self.active_direction == "Right":
                 if cx_blue is not None:
                     # Steer strictly matching the right line path with offset bias
-                    calculated_center = cx_blue - (self.lane_offset * 0.7)
+                    calculated_center = cx_blue + (self.lane_offset * config.ARROW_BIAS)
                 else:
                     # Hard-steer right
                     calculated_center = self.target_center + 100
@@ -186,7 +184,7 @@ class VisionControlBridge:
             target_x = calculated_center + obstacle_avoidance_bias
             print(f"target x: {target_x}")
             # Steer using the Ackermann steering controller
-            self.robot.set_steering(target_x, current_speed)
+            self.robot.set_steering(target_x, current_speed, in_arrow_zone)
         else:
             # Lane lost fallback: slow down and maintain steering center
             self.robot.set_steering(self.target_center, curr_speed=(current_speed * 0.5))

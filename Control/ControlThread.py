@@ -52,7 +52,7 @@ class AckermannRobot:
         # initialise PID for steering
         self.pid = PID()
 
-    def set_steering(self, cx, curr_speed):
+    def set_steering(self, cx, curr_speed, in_arrow_zone):
         """
         Adjust steering angle based on the centroid x-coordinate from vision.
         cx: Centroid X from track line filter (NOTE this must be 0-config.WDITH aka 0-640).
@@ -80,11 +80,11 @@ class AckermannRobot:
         self.steering_servo.angle = self.curr_angle
 
         # activate differnetial steering if the turn is even sharper if unable to make the turn
-        if og_correction < config.PID_CONSTANT_NEEDED_TO_MAX_RIGHT_STEERING_ANGLE:
+        if og_correction < config.PID_CONSTANT_NEEDED_TO_MAX_RIGHT_STEERING_ANGLE and not in_arrow_zone:
             print("Right Correction Differential Activated!!")
             self.drive_motor_right.forward(config.DIFFERNETIAL_SPEED)
             self.drive_motor_left.forward(config.DIFFERNETIAL_SPEED)
-        elif og_correction > config.PID_CONSTANT_NEEDED_TO_MAX_LEFT_STEERING_ANGLE:
+        elif og_correction > config.PID_CONSTANT_NEEDED_TO_MAX_LEFT_STEERING_ANGLE and not in_arrow_zone:
             print("Left Correction Differential Activated!!")
             self.drive_motor_left.backward(config.DIFFERNETIAL_SPEED)
             self.drive_motor_right.backward(config.DIFFERNETIAL_SPEED)

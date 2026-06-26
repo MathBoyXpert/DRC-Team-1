@@ -19,6 +19,9 @@ BASE_SPEED = 1
 # Differential speed
 DIFFERNETIAL_SPEED = 1
 
+# Arrow bias strenght (higher is stronger)
+ARROW_BIAS = 0.5
+
 # STEERING SERVO
 STEERING_SERVO_SDA_PIN = 2
 STEERING_SERVO_SCL_PIN = 3

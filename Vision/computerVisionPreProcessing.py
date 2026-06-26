@@ -150,75 +150,84 @@ class vision:
 
     def mainLoop(self):
         # captures the video input frame by frame
+        start = False
         while True:
-            # this displays the masked version of the current frame for each HSV Filter
-            frame, currFrameNo = VisionInput().Get_Frame()
-            # checks that the frame being retrieved isnt a frame that has already been calculated
-            if self.lastProcessedFrame != currFrameNo:
-                # updates the last processed frame to the frame now being processed
-                self.lastProcessedFrame = currFrameNo
-                self.inference_counter += 1 # Increment for CNN throttling
-                frames_to_combine = [] # this stores the frames output by various hsv filters, to combine into one processed output 
-                
-                # this is the hsv frame after it has been pre-processed
-                frame, hsvFrame = preProccessingUtils.preprocessing(frame)
-                
-                for filter_name, filters in self.HSVManager.items():
-                    # The update masked frame function will also display the masked frame of individual filters if needed, this is editable in the config
-                    # This also allows us to determine if the combined frame with all processes done should be displayed
-                    processed, contour_status = filters.Filter_Main_Process(frame=frame, hsvFrame=hsvFrame)
+            if start:
+                # this displays the masked version of the current frame for each HSV Filter
+                frame, currFrameNo = VisionInput().Get_Frame()
+                # checks that the frame being retrieved isnt a frame that has already been calculated
+                if self.lastProcessedFrame != currFrameNo:
+                    # updates the last processed frame to the frame now being processed
+                    self.lastProcessedFrame = currFrameNo
+                    self.inference_counter += 1 # Increment for CNN throttling
+                    frames_to_combine = [] # this stores the frames output by various hsv filters, to combine into one processed output 
                     
-                    # this displays the processed output when combined with every frame 
-                    if config.DISPLAY_PROCCESSED_OUTPUT:
-                        frames_to_combine.append(processed)
+                    # this is the hsv frame after it has been pre-processed
+                    frame, hsvFrame = preProccessingUtils.preprocessing(frame)
                     
-                    if filter_name == config.ARROW_HSV:
-                        frame = self.analyse_arrow(contour_status, frame)
-                
-                if config.DISPLAY_PROCCESSED_OUTPUT and frames_to_combine:
-                    combinedFrame = cv2.vconcat(frames_to_combine)
-                    cv2.imshow('Processed Video Feed', combinedFrame)
+                    for filter_name, filters in self.HSVManager.items():
+                        # The update masked frame function will also display the masked frame of individual filters if needed, this is editable in the config
+                        # This also allows us to determine if the combined frame with all processes done should be displayed
+                        processed, contour_status = filters.Filter_Main_Process(frame=frame, hsvFrame=hsvFrame)
+                        
+                        # this displays the processed output when combined with every frame 
+                        if config.DISPLAY_PROCCESSED_OUTPUT:
+                            frames_to_combine.append(processed)
+                        
+                        if filter_name == config.ARROW_HSV:
+                            frame = self.analyse_arrow(contour_status, frame)
                     
-                # display the curr frame
-                cv2.imshow('Live Video Feed', frame)
+                    if config.DISPLAY_PROCCESSED_OUTPUT and frames_to_combine:
+                        combinedFrame = cv2.vconcat(frames_to_combine)
+                        cv2.imshow('Processed Video Feed', combinedFrame)
+                        
+                    # display the curr frame
+                    cv2.imshow('Live Video Feed', frame)
+                    
+                    self.VCB.process_and_act(self.HSVManager, self.last_direction, self.last_conf)
+
+                #############################
+                ### LIVE DEBUGGING INPUTS ###
+                #############################
+
+                # grabs the key pressed
+                key = cv2.waitKey(1) & 0xFF
+
+                # checks for an exit input
+                if key == ord('q'):
+                    break
+
+                # checks for an input to change the hsv filter
+                if key == ord('h'):
+                    # destroys the current masked frame and for the HSVManager to display it within itself 
+                    for filters in self.HSVManager.values():
+                        if config.Display_The_Frame[filters.Get_Filter_Name()]:
+                            cv2.destroyWindow(filters.Get_Filter_Frame_Name())
+                        # this applies the new HSV filter after we edit it and save it 
+                        filters.Apply_New_Filter()
                 
-                self.VCB.process_and_act(self.HSVManager, self.last_direction, self.last_conf)
+                # this toggles the display for displaying a processed frame
+                if key == ord('d'):
+                    config.DISPLAY_PROCCESSED_OUTPUT = not config.DISPLAY_PROCCESSED_OUTPUT
 
-            #############################
-            ### LIVE DEBUGGING INPUTS ###
-            #############################
+                # this trains the AI
+                if key == ord('t'):
+                    config.DISPLAY_PROCCESSED_OUTPUT = not config.DISPLAY_PROCCESSED_OUTPUT
 
-            # grabs the key pressed
-            key = cv2.waitKey(1) & 0xFF
+                # Capture keybinds
+                if key == ord('1'):
+                    self.capture_arrow("Left")
+                elif key == ord('2'):
+                    self.capture_arrow("Right")
+                elif key == ord('3'):
+                    self.capture_arrow("None")
+            elif not start:
+                # grabs the key pressed
+                key = cv2.waitKey(1) & 0xFF
 
-            # checks for an exit input
-            if key == ord('q'):
-                break
-
-            # checks for an input to change the hsv filter
-            if key == ord('h'):
-                # destroys the current masked frame and for the HSVManager to display it within itself 
-                for filters in self.HSVManager.values():
-                    if config.Display_The_Frame[filters.Get_Filter_Name()]:
-                        cv2.destroyWindow(filters.Get_Filter_Frame_Name())
-                    # this applies the new HSV filter after we edit it and save it 
-                    filters.Apply_New_Filter()
-            
-            # this toggles the display for displaying a processed frame
-            if key == ord('d'):
-                config.DISPLAY_PROCCESSED_OUTPUT = not config.DISPLAY_PROCCESSED_OUTPUT
-
-            # this trains the AI
-            if key == ord('t'):
-                config.DISPLAY_PROCCESSED_OUTPUT = not config.DISPLAY_PROCCESSED_OUTPUT
-
-            # Capture keybinds
-            if key == ord('1'):
-                self.capture_arrow("Left")
-            elif key == ord('2'):
-                self.capture_arrow("Right")
-            elif key == ord('3'):
-                self.capture_arrow("None")
+                # checks for a start input
+                if key == ord('s'):
+                    start = True
 
         # frees anything stored in memory
         cv2.destroyAllWindows()
